@@ -371,33 +371,6 @@ TEST_CASE("ConfigPaths::create_dirs() returns true if both config and data dirs 
 	}
 }
 
-/// Creates a file at given `filepath` and writes `content` into it.
-///
-/// Returns `true` if successful, `false` otherwise.
-bool create_file(const std::string& filepath, const std::string& contents)
-{
-	std::ofstream out(filepath, std::ios::trunc);
-	if (!out.is_open()) {
-		return false;
-	}
-	out << contents;
-	out.close();
-	return !out.fail();
-}
-
-/// Returns the contents of the file at `filepath`, or an empty string on error.
-std::string file_contents(const std::string& filepath)
-{
-	std::ifstream in(filepath);
-	if (in.is_open()) {
-		std::string result;
-		in >> result;
-		return result;
-	}
-
-	return "";
-}
-
 /// Strings that are placed in files before running commands, to see if
 /// commands modify those files.
 struct FileSentries {
@@ -415,12 +388,14 @@ void mock_newsbeuter_dotdir(
 {
 	const auto dotdir_path = tmp.get_path() + ".newsbeuter/";
 	REQUIRE(::mkdir(dotdir_path.c_str(), 0700) == 0);
-	REQUIRE(create_file(dotdir_path + "config", sentries.config));
-	REQUIRE(create_file(dotdir_path + "urls", sentries.urls));
-	REQUIRE(create_file(dotdir_path + "cache.db", sentries.cache));
-	REQUIRE(create_file(dotdir_path + "queue", sentries.queue));
-	REQUIRE(create_file(dotdir_path + "history.search", sentries.search));
-	REQUIRE(create_file(dotdir_path + "history.cmdline", sentries.cmdline));
+	REQUIRE(TestHelpers::create_file(dotdir_path + "config", sentries.config));
+	REQUIRE(TestHelpers::create_file(dotdir_path + "urls", sentries.urls));
+	REQUIRE(TestHelpers::create_file(dotdir_path + "cache.db", sentries.cache));
+	REQUIRE(TestHelpers::create_file(dotdir_path + "queue", sentries.queue));
+	REQUIRE(TestHelpers::create_file(dotdir_path + "history.search",
+			sentries.search));
+	REQUIRE(TestHelpers::create_file(dotdir_path + "history.cmdline",
+			sentries.cmdline));
 }
 
 void mock_newsbeuter_xdg_dirs(
@@ -429,14 +404,16 @@ void mock_newsbeuter_xdg_dirs(
 	const FileSentries& sentries)
 {
 	REQUIRE(utils::mkdir_parents(config_dir_path, 0700) == 0);
-	REQUIRE(create_file(config_dir_path + "config", sentries.config));
-	REQUIRE(create_file(config_dir_path + "urls", sentries.urls));
+	REQUIRE(TestHelpers::create_file(config_dir_path + "config", sentries.config));
+	REQUIRE(TestHelpers::create_file(config_dir_path + "urls", sentries.urls));
 
 	REQUIRE(utils::mkdir_parents(data_dir_path, 0700) == 0);
-	REQUIRE(create_file(data_dir_path + "cache.db", sentries.cache));
-	REQUIRE(create_file(data_dir_path + "queue", sentries.queue));
-	REQUIRE(create_file(data_dir_path + "history.search", sentries.search));
-	REQUIRE(create_file(data_dir_path + "history.cmdline", sentries.cmdline));
+	REQUIRE(TestHelpers::create_file(data_dir_path + "cache.db", sentries.cache));
+	REQUIRE(TestHelpers::create_file(data_dir_path + "queue", sentries.queue));
+	REQUIRE(TestHelpers::create_file(data_dir_path + "history.search",
+			sentries.search));
+	REQUIRE(TestHelpers::create_file(data_dir_path + "history.cmdline",
+			sentries.cmdline));
 }
 
 void mock_newsbeuter_xdg_dirs(
@@ -456,7 +433,7 @@ void mock_newsboat_dotdir(
 	REQUIRE(::mkdir(dotdir_path.c_str(), 0700) == 0);
 
 	const auto urls_file = dotdir_path + "urls";
-	REQUIRE(create_file(urls_file, sentries.urls));
+	REQUIRE(TestHelpers::create_file(urls_file, sentries.urls));
 }
 
 void mock_newsboat_xdg_dirs(
@@ -467,7 +444,7 @@ void mock_newsboat_xdg_dirs(
 	REQUIRE(utils::mkdir_parents(config_dir_path, 0700) == 0);
 
 	const auto urls_file = config_dir_path + "urls";
-	REQUIRE(create_file(urls_file, sentries.urls));
+	REQUIRE(TestHelpers::create_file(urls_file, sentries.urls));
 }
 
 void mock_newsboat_xdg_dirs(
@@ -502,13 +479,13 @@ TEST_CASE("try_migrate_from_newsbeuter() doesn't migrate if config paths "
 		FileSentries boat_sentries;
 
 		const auto url_file = tmp.get_path() + "my urls file";
-		REQUIRE(create_file(url_file, boat_sentries.urls));
+		REQUIRE(TestHelpers::create_file(url_file, boat_sentries.urls));
 
 		const auto cache_file = tmp.get_path() + "new cache.db";
-		REQUIRE(create_file(cache_file, boat_sentries.cache));
+		REQUIRE(TestHelpers::create_file(cache_file, boat_sentries.cache));
 
 		const auto config_file = tmp.get_path() + "custom config file";
-		REQUIRE(create_file(config_file, boat_sentries.config));
+		REQUIRE(TestHelpers::create_file(config_file, boat_sentries.config));
 
 		TestHelpers::Opts opts({
 			"newsboat",
@@ -525,13 +502,13 @@ TEST_CASE("try_migrate_from_newsbeuter() doesn't migrate if config paths "
 		REQUIRE_FALSE(paths.try_migrate_from_newsbeuter());
 
 		INFO("Newsbeuter's urls file sentry: " << beuter_sentries.urls);
-		REQUIRE(file_contents(url_file) == boat_sentries.urls);
+		REQUIRE(TestHelpers::file_contents(url_file) == boat_sentries.urls);
 
 		INFO("Newsbeuter's config file sentry: " << beuter_sentries.config);
-		REQUIRE(file_contents(config_file) == boat_sentries.config);
+		REQUIRE(TestHelpers::file_contents(config_file) == boat_sentries.config);
 
 		INFO("Newsbeuter's cache file sentry: " << beuter_sentries.cache);
-		REQUIRE(file_contents(cache_file) == boat_sentries.cache);
+		REQUIRE(TestHelpers::file_contents(cache_file) == boat_sentries.cache);
 	};
 
 	SECTION("Newsbeuter dotdir exists") {
@@ -573,7 +550,7 @@ TEST_CASE("try_migrate_from_newsbeuter() doesn't migrate if urls file "
 		REQUIRE_FALSE(paths.try_migrate_from_newsbeuter());
 
 		INFO("Newsbeuter's urls file sentry: " << beuter_sentries.urls);
-		REQUIRE(file_contents(urls_filepath) == boat_sentries.urls);
+		REQUIRE(TestHelpers::file_contents(urls_filepath) == boat_sentries.urls);
 	};
 
 	SECTION("Newsbeuter dotdir exists") {
@@ -762,12 +739,14 @@ TEST_CASE("try_migrate_from_newsbeuter() migrates Newsbeuter dotdir from "
 
 	const auto dotdir = tmp.get_path() + ".newsboat/";
 
-	REQUIRE(file_contents(dotdir + "config") == sentries.config);
-	REQUIRE(file_contents(dotdir + "urls") == sentries.urls);
-	REQUIRE(file_contents(dotdir + "cache.db") == sentries.cache);
-	REQUIRE(file_contents(dotdir + "queue") == sentries.queue);
-	REQUIRE(file_contents(dotdir + "history.search") == sentries.search);
-	REQUIRE(file_contents(dotdir + "history.cmdline") == sentries.cmdline);
+	REQUIRE(TestHelpers::file_contents(dotdir + "config") == sentries.config);
+	REQUIRE(TestHelpers::file_contents(dotdir + "urls") == sentries.urls);
+	REQUIRE(TestHelpers::file_contents(dotdir + "cache.db") == sentries.cache);
+	REQUIRE(TestHelpers::file_contents(dotdir + "queue") == sentries.queue);
+	REQUIRE(TestHelpers::file_contents(dotdir + "history.search") ==
+		sentries.search);
+	REQUIRE(TestHelpers::file_contents(dotdir + "history.cmdline") ==
+		sentries.cmdline);
 }
 
 TEST_CASE("try_migrate_from_newsbeuter() migrates Newsbeuter XDG dirs from "
@@ -798,13 +777,15 @@ TEST_CASE("try_migrate_from_newsbeuter() migrates Newsbeuter XDG dirs from "
 		// Files should be migrated, so should return true.
 		REQUIRE(paths.try_migrate_from_newsbeuter());
 
-		REQUIRE(file_contents(config_dir + "config") == sentries.config);
-		REQUIRE(file_contents(config_dir + "urls") == sentries.urls);
+		REQUIRE(TestHelpers::file_contents(config_dir + "config") == sentries.config);
+		REQUIRE(TestHelpers::file_contents(config_dir + "urls") == sentries.urls);
 
-		REQUIRE(file_contents(data_dir + "cache.db") == sentries.cache);
-		REQUIRE(file_contents(data_dir + "queue") == sentries.queue);
-		REQUIRE(file_contents(data_dir + "history.search") == sentries.search);
-		REQUIRE(file_contents(data_dir + "history.cmdline") == sentries.cmdline);
+		REQUIRE(TestHelpers::file_contents(data_dir + "cache.db") == sentries.cache);
+		REQUIRE(TestHelpers::file_contents(data_dir + "queue") == sentries.queue);
+		REQUIRE(TestHelpers::file_contents(data_dir + "history.search") ==
+			sentries.search);
+		REQUIRE(TestHelpers::file_contents(data_dir + "history.cmdline") ==
+			sentries.cmdline);
 	};
 
 	SECTION("Default XDG locations") {

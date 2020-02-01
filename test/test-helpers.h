@@ -243,6 +243,34 @@ inline void assert_article_file_content(const std::string& path,
 	REQUIRE(line == "");
 };
 
+/// Creates a file at given `filepath` and writes `content` into it.
+///
+/// Returns `true` if successful, `false` otherwise.
+inline bool create_file(const std::string& filepath,
+	const std::string& contents)
+{
+	std::ofstream out(filepath, std::ios::trunc);
+	if (!out.is_open()) {
+		return false;
+	}
+	out << contents;
+	out.close();
+	return !out.fail();
+}
+
+/// Returns the contents of the file at `filepath`, or an empty string on error.
+inline std::string file_contents(const std::string& filepath)
+{
+	std::ifstream in(filepath);
+	if (in.is_open()) {
+		std::string result;
+		in >> result;
+		return result;
+	}
+
+	return "";
+}
+
 /* \brief Copy a file
  */
 inline void copy_file(const std::string& source, const std::string& destination)
