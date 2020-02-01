@@ -243,9 +243,11 @@ inline void assert_article_file_content(const std::string& path,
 	REQUIRE(line == "");
 };
 
-/// Creates a file at given `filepath` and writes `content` into it.
-///
-/// Returns `true` if successful, `false` otherwise.
+/* \brief Create and write to file
+ *
+ * Writes `content` to file at `filepath`
+ * Returns true if succesful, false on error
+ */
 inline bool create_file(const std::string& filepath,
 	const std::string& contents)
 {
@@ -258,7 +260,10 @@ inline bool create_file(const std::string& filepath,
 	return !out.fail();
 }
 
-/// Returns the contents of the file at `filepath`, or an empty string on error.
+/* \brief Read file contents
+ *
+ * Returns contents of file at `filepath` (empty string on error)
+ */
 inline std::string file_contents(const std::string& filepath)
 {
 	std::ifstream in(filepath);
