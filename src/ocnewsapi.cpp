@@ -262,7 +262,7 @@ rsspp::Feed OcNewsApi::fetch_feed(const std::string& feed_id)
 		json_object_object_get_ex(item_j, "feedId", &node);
 		long f_id = json_object_get_int(node);
 
-		json_object_object_get_ex(item_j, "guid", &node);
+		json_object_object_get_ex(item_j, "guidHash", &node);
 		item.guid = std::to_string(id) + ":" + std::to_string(f_id) +
 			"/" + json_object_get_string(node);
 
