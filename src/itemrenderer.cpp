@@ -31,9 +31,10 @@ std::string item_renderer::get_feedtitle(std::shared_ptr<RssItem> item)
 }
 
 void prepare_header(
+	const std::string& url,
 	std::shared_ptr<RssItem> item,
 	std::vector<std::pair<LineType, std::string>>& lines,
-	std::vector<LinkPair>& /*links*/, bool raw = false)
+	std::vector<LinkPair>& links, bool raw = false)
 {
 	const auto add_line =
 		[&lines]
@@ -60,8 +61,20 @@ void prepare_header(
 	add_line(stfl_quote_if_needed(feedtitle), _("Feed: "));
 	add_line(stfl_quote_if_needed(utils::utf8_to_locale(item->title())),
 		_("Title: "));
-	add_line(stfl_quote_if_needed(utils::utf8_to_locale(item->author())),
-		_("Author: "));
+	if (raw) {
+		add_line(stfl_quote_if_needed(utils::utf8_to_locale(item->author())),
+			_("Author: "));
+	} else {
+		std::vector<std::pair<LineType, std::string>> lines;
+
+		HtmlRenderer rnd;
+		rnd.render(item->author(), lines, links, url);
+
+		// Only show first line
+		if (lines.size() >= 1) {
+			add_line(utils::utf8_to_locale(lines[0].second), _("Author: "));
+		}
+	}
 	add_line(item->pubDate(), _("Date: "));
 	add_line(item->link(), _("Link: "), LineType::softwrappable);
 	add_line(item->flags(), _("Flags: "));
@@ -137,8 +150,8 @@ std::string item_renderer::to_plain_text(
 	std::vector<std::pair<LineType, std::string>> lines;
 	std::vector<LinkPair> links;
 
-	prepare_header(item, lines, links, true);
 	const auto base = get_item_base_link(item);
+	prepare_header(base, item, lines, links, true);
 	render_html(cfg, utils::utf8_to_locale(item->description()), lines, links,
 		base, true);
 
@@ -164,9 +177,9 @@ std::pair<std::string, size_t> item_renderer::to_stfl_list(
 {
 	std::vector<std::pair<LineType, std::string>> lines;
 
-	prepare_header(item, lines, links);
 	const std::string baseurl = get_item_base_link(item);
 	const auto body = utils::utf8_to_locale(item->description());
+	prepare_header(baseurl, item, lines, links);
 	render_html(cfg, body, lines, links, baseurl, false);
 
 	TextFormatter txtfmt;
@@ -207,7 +220,7 @@ std::pair<std::string, size_t> item_renderer::source_to_stfl_list(
 	std::vector<std::pair<LineType, std::string>> lines;
 	std::vector<LinkPair> links;
 
-	prepare_header(item, lines, links);
+	prepare_header(get_item_base_link(item), item, lines, links);
 	render_source(lines, utils::quote_for_stfl(utils::utf8_to_locale(
 				item->description())));
 
