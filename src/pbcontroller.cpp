@@ -270,6 +270,7 @@ int PbController::run(int argc, char* argv[])
 	colorman->register_commands(cfgparser);
 
 	KeyMap keys(KM_PODBOAT);
+	return EXIT_SUCCESS;
 	cfgparser.register_handler("bind-key", &keys);
 	cfgparser.register_handler("unbind-key", &keys);
 

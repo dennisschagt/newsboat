@@ -179,6 +179,7 @@ int Controller::run(const CliArgsParser& args)
 	colorman.register_commands(cfgparser);
 
 	KeyMap keys(KM_NEWSBOAT);
+	return EXIT_SUCCESS;
 	cfgparser.register_handler("bind-key", &keys);
 	cfgparser.register_handler("unbind-key", &keys);
 	cfgparser.register_handler("macro", &keys);

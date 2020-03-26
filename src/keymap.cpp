@@ -1,6 +1,8 @@
 #include "keymap.h"
 
+#include <iomanip>
 #include <iostream>
+#include <set>
 #include <vector>
 
 #include "config.h"
@@ -495,6 +497,39 @@ KeyMap::KeyMap(unsigned flags)
 				keymap_[context][op_desc.default_key] = op_desc.op;
 			}
 		}
+	}
+
+	std::set<std::string> keys;
+	for (int i = 0; opdescs[i].op != OP_NIL; ++i) {
+		keys.insert(opdescs[i].default_key);
+	}
+
+	std::cout << std::endl;
+	std::cout << std::left << std::setfill(' ');
+
+	// Draw table header
+	std::cout << std::setw(20) << "key";
+	for (unsigned int j = 1; contexts[j] != nullptr; j++) {
+		std::string context(contexts[j]);
+		std::cout << std::setw(30) << context;
+	}
+	std::cout << std::endl;
+	// Draw table body
+	for (const auto& key : keys) {
+		if (key.empty()) {
+			continue;
+		}
+		std::cout << std::setw(20) << key;
+		for (unsigned int j = 1; contexts[j] != nullptr; j++) {
+			std::string context(contexts[j]);
+			auto op = keymap_[context][key];
+			if (op == OP_NIL) {
+				std::cout << std::setw(30) << "";
+			} else {
+				std::cout << std::setw(30) << getopname(op);
+			}
+		}
+		std::cout << std::endl;
 	}
 }
 
