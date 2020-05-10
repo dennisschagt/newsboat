@@ -586,6 +586,10 @@ src/stflpp.o: src/stflpp.cpp include/stflpp.h include/exception.h \
  include/logger.h config.h include/strprintf.h include/utils.h \
  3rd-party/optional.hpp include/configcontainer.h include/configparser.h \
  include/configactionhandler.h include/logger.h
+src/stflstring.o: src/stflstring.cpp include/stflstring.h include/utils.h \
+ 3rd-party/optional.hpp include/configcontainer.h include/configparser.h \
+ include/configactionhandler.h include/logger.h config.h \
+ include/strprintf.h
 src/strprintf.o: src/strprintf.cpp include/strprintf.h
 src/tagsouppullparser.o: src/tagsouppullparser.cpp \
  include/tagsouppullparser.h config.h include/logger.h \
@@ -832,6 +836,8 @@ test/scopemeasure.o: test/scopemeasure.cpp include/scopemeasure.h \
  3rd-party/catch.hpp include/logger.h config.h include/strprintf.h \
  test/test-helpers/loggerresetter.h test/test-helpers/tempfile.h \
  test/test-helpers/maintempdir.h
+test/stflstring.o: test/stflstring.cpp include/stflstring.h \
+ 3rd-party/catch.hpp
 test/strprintf.o: test/strprintf.cpp include/strprintf.h \
  3rd-party/catch.hpp
 test/tagsouppullparser.o: test/tagsouppullparser.cpp \
