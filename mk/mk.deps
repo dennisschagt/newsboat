@@ -531,6 +531,10 @@ src/stflpp.o: src/stflpp.cpp include/stflpp.h include/exception.h \
  include/logger.h config.h include/strprintf.h include/utils.h \
  3rd-party/optional.hpp include/configcontainer.h include/configparser.h \
  include/configactionhandler.h include/logger.h
+src/stflstring.o: src/stflstring.cpp include/stflstring.h include/utils.h \
+ 3rd-party/optional.hpp include/configcontainer.h include/configparser.h \
+ include/configactionhandler.h include/logger.h config.h \
+ include/strprintf.h
 src/strprintf.o: src/strprintf.cpp include/strprintf.h
 src/tagsouppullparser.o: src/tagsouppullparser.cpp \
  include/tagsouppullparser.h config.h include/logger.h \
@@ -763,6 +767,8 @@ test/rsspp_parser.o: test/rsspp_parser.cpp rss/parser.h \
 test/rsspp_rssparser.o: test/rsspp_rssparser.cpp rss/rssparser.h \
  3rd-party/catch.hpp test/test-helpers/envvar.h 3rd-party/optional.hpp
 test/ruststring.o: test/ruststring.cpp include/ruststring.h \
+ 3rd-party/catch.hpp
+test/stflstring.o: test/stflstring.cpp include/stflstring.h \
  3rd-party/catch.hpp
 test/strprintf.o: test/strprintf.cpp include/strprintf.h \
  3rd-party/catch.hpp
