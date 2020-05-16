@@ -680,12 +680,6 @@ TEST_CASE("absolute_url()", "[utils]")
 			"bla2.html") == "http://test:test@foobar:33/bla2.html");
 }
 
-TEST_CASE("quote_for_stfl() adds a \'>\' after every \'<\'", "[utils]")
-{
-	REQUIRE(utils::quote_for_stfl("<<><><><") == "<><>><>><>><>");
-	REQUIRE(utils::quote_for_stfl("test") == "test");
-}
-
 TEST_CASE("quote()", "[utils]")
 {
 	REQUIRE(utils::quote("") == "\"\"");

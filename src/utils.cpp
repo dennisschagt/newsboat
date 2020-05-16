@@ -678,11 +678,6 @@ std::string utils::censor_url(const std::string& url)
 	return RustString(rs_censor_url(url.c_str()));
 }
 
-std::string utils::quote_for_stfl(std::string str)
-{
-	return RustString(rs_quote_for_stfl(str.c_str()));
-}
-
 void utils::trim(std::string& str)
 {
 	str = RustString(rs_trim(str.c_str()));
