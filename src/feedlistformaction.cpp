@@ -16,6 +16,7 @@
 #include "reloader.h"
 #include "rssfeed.h"
 #include "scopemeasure.h"
+#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 #include "view.h"
@@ -1069,7 +1070,8 @@ std::string FeedListFormAction::format_line(const std::string& feedlist_format,
 	fmt.register_fmt('d', utils::utf8_to_locale(feed->description()));
 
 	auto formattedLine = fmt.do_format(feedlist_format, width);
-	formattedLine = utils::quote_for_stfl(formattedLine);
+	formattedLine = StflString::from_regular(
+			formattedLine).get_stfl_quoted_string();
 	if (unread_count > 0) {
 		formattedLine = strprintf::fmt("<unread>%s</>", formattedLine);
 	}

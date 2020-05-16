@@ -5,6 +5,7 @@
 #include "configcontainer.h"
 #include "htmlrenderer.h"
 #include "rssfeed.h"
+#include "stflstring.h"
 #include "textformatter.h"
 
 namespace newsboat {
@@ -52,7 +53,7 @@ void prepare_header(
 		if (raw) {
 			return str;
 		} else {
-			return utils::quote_for_stfl(str);
+			return StflString::from_regular(str).get_stfl_quoted_string();
 		};
 	};
 
@@ -123,7 +124,7 @@ void render_html(
 		while (!is.eof()) {
 			getline(is, line);
 			if (!raw) {
-				line = utils::quote_for_stfl(line);
+				line = StflString::from_regular(line).get_stfl_quoted_string();
 			}
 			lines.push_back(std::make_pair(LineType::softwrappable, line));
 		}
@@ -208,8 +209,8 @@ std::pair<std::string, size_t> item_renderer::source_to_stfl_list(
 	std::vector<LinkPair> links;
 
 	prepare_header(item, lines, links);
-	render_source(lines, utils::quote_for_stfl(utils::utf8_to_locale(
-				item->description())));
+	render_source(lines, StflString::from_regular(utils::utf8_to_locale(
+				item->description())).get_stfl_quoted_string());
 
 	TextFormatter txtfmt;
 	txtfmt.add_lines(lines);

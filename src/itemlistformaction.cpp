@@ -15,6 +15,7 @@
 #include "matcherexception.h"
 #include "rssfeed.h"
 #include "scopemeasure.h"
+#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 #include "view.h"
@@ -1063,7 +1064,8 @@ std::string ItemListFormAction::item2formatted_line(const ItemPtrPosPair& item,
 	fmt.register_fmt('L', item.first->length());
 
 	auto formattedLine = fmt.do_format(itemlist_format, width);
-	formattedLine = utils::quote_for_stfl(formattedLine);
+	formattedLine = StflString::from_regular(
+			formattedLine).get_stfl_quoted_string();
 
 	if (rxman) {
 		int id;

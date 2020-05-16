@@ -7,6 +7,7 @@
 #include "fmtstrformatter.h"
 #include "keymap.h"
 #include "listformatter.h"
+#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 #include "view.h"
@@ -185,7 +186,7 @@ void HelpFormAction::prepare()
 						"step 1 "
 						"- line = %s",
 						line);
-					line = utils::quote_for_stfl(line);
+					line = StflString::from_regular(line).get_stfl_quoted_string();
 					LOG(Level::DEBUG,
 						"HelpFormAction::prepare: "
 						"step 2 "

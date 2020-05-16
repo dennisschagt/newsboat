@@ -17,6 +17,7 @@
 #include "config.h"
 #include "fmtstrformatter.h"
 #include "logger.h"
+#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 #include "view.h"
@@ -344,7 +345,7 @@ std::string FileBrowserFormAction::add_file(std::string filename)
 		retval = strprintf::fmt("{listitem[%c%s] text:%s}",
 				ftype,
 				Stfl::quote(filename),
-				Stfl::quote(utils::quote_for_stfl(line)));
+				Stfl::quote(StflString::from_regular(line).get_stfl_quoted_string()));
 	}
 	return retval;
 }

@@ -11,6 +11,7 @@
 
 #include "config.h"
 #include "logger.h"
+#include "stflstring.h"
 #include "strprintf.h"
 #include "tagsouppullparser.h"
 #include "utils.h"
@@ -857,7 +858,7 @@ void HtmlRenderer::render(std::istream& input,
 
 			auto text = xpp.get_text();
 			if (!raw_) {
-				text = utils::quote_for_stfl(text);
+				text = StflString::from_regular(text).get_stfl_quoted_string();
 			}
 
 			if (itunes_hack) {
