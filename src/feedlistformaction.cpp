@@ -16,7 +16,6 @@
 #include "reloader.h"
 #include "rssfeed.h"
 #include "scopemeasure.h"
-#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 #include "view.h"
@@ -609,7 +608,7 @@ void FeedListFormAction::set_feedlist(
 		listfmt.add_line(format_line(feedlist_format,
 				feed.first,
 				feed.second,
-				width),
+				width).get_stfl_quoted_string(),
 			feed.second);
 		i++;
 	}
@@ -1046,7 +1045,7 @@ std::string FeedListFormAction::get_title(std::shared_ptr<RssFeed> feed)
 	return title;
 }
 
-std::string FeedListFormAction::format_line(const std::string& feedlist_format,
+StflString FeedListFormAction::format_line(const std::string& feedlist_format,
 	std::shared_ptr<RssFeed> feed,
 	unsigned int pos,
 	unsigned int width)
@@ -1070,13 +1069,12 @@ std::string FeedListFormAction::format_line(const std::string& feedlist_format,
 	fmt.register_fmt('d', utils::utf8_to_locale(feed->description()));
 
 	auto formattedLine = fmt.do_format(feedlist_format, width);
-	formattedLine = StflString::from_regular(
-			formattedLine).get_stfl_quoted_string();
+	StflString quotedLine = StflString::from_regular(formattedLine);
 	if (unread_count > 0) {
-		formattedLine = strprintf::fmt("<unread>%s</>", formattedLine);
+		return StflString("<unread>") + quotedLine + StflString("</>");
 	}
 
-	return formattedLine;
+	return quotedLine;
 }
 
 std::string FeedListFormAction::title()

@@ -6,6 +6,7 @@
 #include "listwidget.h"
 #include "matcher.h"
 #include "regexmanager.h"
+#include "stflstring.h"
 #include "view.h"
 
 namespace newsboat {
@@ -67,7 +68,7 @@ private:
 
 	std::string get_title(std::shared_ptr<RssFeed> feed);
 
-	std::string format_line(const std::string& feedlist_format,
+	StflString format_line(const std::string& feedlist_format,
 		std::shared_ptr<RssFeed> feed,
 		unsigned int pos,
 		unsigned int width);
