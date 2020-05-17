@@ -8,6 +8,7 @@
 #include "listformatter.h"
 #include "listwidget.h"
 #include "regexmanager.h"
+#include "stflstring.h"
 #include "view.h"
 
 namespace newsboat {
@@ -120,7 +121,7 @@ private:
 		invalidated_itempos.push_back(invalidated_pos);
 	}
 
-	std::string item2formatted_line(const ItemPtrPosPair& item,
+	StflString item2formatted_line(const ItemPtrPosPair& item,
 		const unsigned int width,
 		const std::string& itemlist_format,
 		const std::string& datetime_format);

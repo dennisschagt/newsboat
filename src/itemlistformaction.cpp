@@ -15,7 +15,6 @@
 #include "matcherexception.h"
 #include "rssfeed.h"
 #include "scopemeasure.h"
-#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 #include "view.h"
@@ -1001,7 +1000,7 @@ void ItemListFormAction::prepare()
 					width,
 					itemlist_format,
 					datetime_format);
-			listfmt.add_line(line, item.second);
+			listfmt.add_line(line.get_stfl_quoted_string(), item.second);
 		}
 		break;
 
@@ -1012,7 +1011,7 @@ void ItemListFormAction::prepare()
 					width,
 					itemlist_format,
 					datetime_format);
-			listfmt.set_line(itempos, line, item.second);
+			listfmt.set_line(itempos, line.get_stfl_quoted_string(), item.second);
 		}
 		break;
 	}
@@ -1031,7 +1030,7 @@ void ItemListFormAction::prepare()
 	prepare_set_filterpos();
 }
 
-std::string ItemListFormAction::item2formatted_line(const ItemPtrPosPair& item,
+StflString ItemListFormAction::item2formatted_line(const ItemPtrPosPair& item,
 	const unsigned int width,
 	const std::string& itemlist_format,
 	const std::string& datetime_format)
@@ -1064,22 +1063,21 @@ std::string ItemListFormAction::item2formatted_line(const ItemPtrPosPair& item,
 	fmt.register_fmt('L', item.first->length());
 
 	auto formattedLine = fmt.do_format(itemlist_format, width);
-	formattedLine = StflString::from_regular(
-			formattedLine).get_stfl_quoted_string();
+	StflString quotedLine = StflString::from_regular(formattedLine);
 
 	if (rxman) {
 		int id;
 		if ((id = rxman->article_matches(item.first.get())) != -1) {
-			formattedLine =
-				strprintf::fmt("<%d>%s</>", id, formattedLine);
+			quotedLine = StflString("<" + std::to_string(id) + ">") + quotedLine +
+				StflString("</>");
 		}
 	}
 
 	if (item.first->unread()) {
-		formattedLine = strprintf::fmt("<unread>%s</>", formattedLine);
+		quotedLine = StflString("<unread>") + quotedLine + StflString("</>");
 	}
 
-	return formattedLine;
+	return quotedLine;
 }
 
 void ItemListFormAction::init()
