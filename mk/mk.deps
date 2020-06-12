@@ -485,8 +485,8 @@ src/regexmanager.o: src/regexmanager.cpp include/regexmanager.h \
  include/configparser.h include/configactionhandler.h include/matcher.h \
  filter/FilterParser.h include/regexowner.h config.h \
  include/confighandlerexception.h include/logger.h include/strprintf.h \
- include/strprintf.h include/utils.h 3rd-party/optional.hpp \
- include/configcontainer.h include/logger.h
+ include/stflstring.h include/strprintf.h include/utils.h \
+ 3rd-party/optional.hpp include/configcontainer.h include/logger.h
 src/regexowner.o: src/regexowner.cpp include/regexowner.h
 src/reloader.o: src/reloader.cpp include/reloader.h \
  include/configcontainer.h include/configparser.h \
