@@ -7,6 +7,7 @@
 
 #include "htmlrenderer.h"
 #include "stflpp.h"
+#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 
@@ -163,7 +164,9 @@ std::vector<std::string> format_text_plain_helper(
 			static_cast<unsigned int>(type));
 
 		if (rxman && type != LineType::hr) {
-			rxman->quote_and_highlight(text, location);
+			auto stflText = StflString::from_quoted(text);
+			rxman->quote_and_highlight(stflText, location);
+			text = stflText.get_stfl_quoted_string();
 		}
 
 		switch (type) {

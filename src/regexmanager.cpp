@@ -7,7 +7,6 @@
 #include "config.h"
 #include "confighandlerexception.h"
 #include "logger.h"
-#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 
@@ -62,13 +61,10 @@ void RegexManager::remove_last_regex(const std::string& location)
 	regexes.pop_back();
 }
 
-void RegexManager::quote_and_highlight(std::string& str,
+void RegexManager::quote_and_highlight(StflString& str,
 	const std::string& location)
 {
 	auto& regexes = locations[location];
-
-	// TODO(dennisschagt): Pass string as StflString directly
-	auto stflString = StflString::from_quoted(str);
 
 	for (unsigned int i = 0; i < regexes.size(); ++i) {
 		const auto& regex = regexes[i].first;
@@ -77,8 +73,8 @@ void RegexManager::quote_and_highlight(std::string& str,
 		}
 		unsigned int offset = 0;
 		int eflags = 0;
-		while (offset < stflString.get_raw_string().length()) {
-			const auto matches = regex->matches(stflString.get_raw_string().substr(offset),
+		while (offset < str.get_raw_string().length()) {
+			const auto matches = regex->matches(str.get_raw_string().substr(offset),
 					1, eflags);
 			eflags |= REG_NOTBOL; // Don't match beginning-of-line operator (^) in following checks
 			if (matches.empty()) {
@@ -89,15 +85,13 @@ void RegexManager::quote_and_highlight(std::string& str,
 				const std::string marker = strprintf::fmt("<%u>", i);
 				const int match_start = offset + match.first;
 				const int match_end = offset + match.second;
-				stflString.apply_style(marker, match_start, match_end);
+				str.apply_style(marker, match_start, match_end);
 				offset = match_end;
 			} else {
 				offset++;
 			}
 		}
 	}
-
-	str = stflString.get_stfl_quoted_string();
 }
 
 void RegexManager::handle_highlight_action(const std::vector<std::string>&

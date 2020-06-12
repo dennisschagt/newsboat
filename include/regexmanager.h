@@ -12,6 +12,7 @@
 #include "configparser.h"
 #include "matcher.h"
 #include "regexowner.h"
+#include "stflstring.h"
 
 namespace newsboat {
 
@@ -21,7 +22,7 @@ public:
 	void handle_action(const std::string& action,
 		const std::vector<std::string>& params) override;
 	void dump_config(std::vector<std::string>& config_output) override;
-	void quote_and_highlight(std::string& str, const std::string& location);
+	void quote_and_highlight(StflString& str, const std::string& location);
 	void remove_last_regex(const std::string& location);
 	int article_matches(Matchable* item);
 	std::string get_attrs_stfl_string(const std::string& location, bool hasFocus);

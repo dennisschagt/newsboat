@@ -4,6 +4,7 @@
 #include <limits.h>
 
 #include "stflpp.h"
+#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 
@@ -79,18 +80,18 @@ std::string ListFormatter::format_list() const
 {
 	std::string format_cache = "{list";
 	for (const auto& line : lines) {
-		std::string str = line.first;
+		auto str = StflString::from_quoted(line.first);
 		if (rxman) {
 			rxman->quote_and_highlight(str, location);
 		}
 		if (line.second.empty()) {
 			format_cache.append(strprintf::fmt(
-					"{listitem text:%s}", Stfl::quote(str)));
+					"{listitem text:%s}", Stfl::quote(str.get_stfl_quoted_string())));
 		} else {
 			format_cache.append(
 				strprintf::fmt("{listitem[%s] text:%s}",
 					line.second,
-					Stfl::quote(str)));
+					Stfl::quote(str.get_stfl_quoted_string())));
 		}
 	}
 	format_cache.push_back('}');
