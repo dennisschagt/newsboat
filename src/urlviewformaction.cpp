@@ -7,6 +7,7 @@
 #include "fmtstrformatter.h"
 #include "listformatter.h"
 #include "rssfeed.h"
+#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 #include "view.h"
@@ -125,7 +126,8 @@ void UrlViewFormAction::prepare()
 		unsigned int i = 0;
 		for (const auto& link : links) {
 			listfmt.add_line(
-				utils::quote_for_stfl(strprintf::fmt("%2u  %s", i + 1, link.first)),
+				StflString(strprintf::fmt("%2u  %s", i + 1,
+						link.first)).get_stfl_quoted_string(),
 				std::to_string(i));
 			i++;
 		}

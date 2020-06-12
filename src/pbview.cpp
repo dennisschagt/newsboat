@@ -17,6 +17,7 @@
 #include "logger.h"
 #include "pbcontroller.h"
 #include "poddlthread.h"
+#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 
@@ -408,7 +409,7 @@ std::string PbView::format_line(const std::string& podlist_format,
 	fmt.register_fmt('b', strprintf::fmt("%s", dl.basename()));
 
 	auto formattedLine = fmt.do_format(podlist_format, width);
-	formattedLine = utils::quote_for_stfl(formattedLine);
+	formattedLine = StflString(formattedLine).get_stfl_quoted_string();
 	return formattedLine;
 }
 

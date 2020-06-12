@@ -7,6 +7,7 @@
 #include "config.h"
 #include "fmtstrformatter.h"
 #include "listformatter.h"
+#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 #include "view.h"
@@ -159,11 +160,11 @@ void SelectFormAction::prepare()
 		case SelectionType::TAG:
 			for (const auto& tag : tags) {
 				listfmt.add_line(
-					utils::quote_for_stfl(
+					StflString(
 						format_line(selecttag_format,
 							tag,
 							i + 1,
-							width)),
+							width)).get_stfl_quoted_string(),
 					std::to_string(i));
 				i++;
 			}
@@ -172,7 +173,8 @@ void SelectFormAction::prepare()
 			for (const auto& filter : filters) {
 				std::string tagstr = strprintf::fmt(
 						"%4u  %s", i + 1, filter.name);
-				listfmt.add_line(utils::quote_for_stfl(tagstr), std::to_string(i));
+				listfmt.add_line(StflString(tagstr).get_stfl_quoted_string(),
+					std::to_string(i));
 				i++;
 			}
 			break;

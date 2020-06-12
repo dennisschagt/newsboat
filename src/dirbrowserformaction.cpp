@@ -17,6 +17,7 @@
 #include "config.h"
 #include "fmtstrformatter.h"
 #include "logger.h"
+#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 #include "view.h"
@@ -351,7 +352,7 @@ void DirBrowserFormAction::add_directory(ListFormatter& listfmt,
 				sizestr,
 				formatteddirname);
 		std::string id = strprintf::fmt("%c%s", ftype, Stfl::quote(dirname));
-		listfmt.add_line(utils::quote_for_stfl(line), id);
+		listfmt.add_line(StflString(line).get_stfl_quoted_string(), id);
 	}
 }
 

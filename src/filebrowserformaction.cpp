@@ -18,6 +18,7 @@
 #include "fmtstrformatter.h"
 #include "listformatter.h"
 #include "logger.h"
+#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 #include "view.h"
@@ -342,7 +343,7 @@ void FileBrowserFormAction::add_file(ListFormatter& listfmt,
 				sizestr,
 				formattedfilename);
 		std::string id = strprintf::fmt("%c%s", ftype, Stfl::quote(filename));
-		listfmt.add_line(utils::quote_for_stfl(line), id);
+		listfmt.add_line(StflString(line).get_stfl_quoted_string(), id);
 	}
 }
 
