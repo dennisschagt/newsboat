@@ -579,10 +579,10 @@ void FeedListFormAction::set_feedlist(
 	update_visible_feeds(feeds);
 
 	for (const auto& feed : visible_feeds) {
-		listfmt.add_line(format_line(feedlist_format,
-				feed.first,
-				feed.second,
-				width),
+		listfmt.add_line(StflString::from_quoted(format_line(feedlist_format,
+					feed.first,
+					feed.second,
+					width)),
 			std::to_string(feed.second));
 	}
 

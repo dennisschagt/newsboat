@@ -352,7 +352,7 @@ void DirBrowserFormAction::add_directory(ListFormatter& listfmt,
 				sizestr,
 				formatteddirname);
 		std::string id = strprintf::fmt("%c%s", ftype, Stfl::quote(dirname));
-		listfmt.add_line(StflString(line).get_stfl_quoted_string(), id);
+		listfmt.add_line(StflString(line), id);
 	}
 }
 

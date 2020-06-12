@@ -160,11 +160,7 @@ void SelectFormAction::prepare()
 		case SelectionType::TAG:
 			for (const auto& tag : tags) {
 				listfmt.add_line(
-					StflString(
-						format_line(selecttag_format,
-							tag,
-							i + 1,
-							width)).get_stfl_quoted_string(),
+					StflString(format_line(selecttag_format, tag, i + 1, width)),
 					std::to_string(i));
 				i++;
 			}
@@ -173,8 +169,7 @@ void SelectFormAction::prepare()
 			for (const auto& filter : filters) {
 				std::string tagstr = strprintf::fmt(
 						"%4u  %s", i + 1, filter.name);
-				listfmt.add_line(StflString(tagstr).get_stfl_quoted_string(),
-					std::to_string(i));
+				listfmt.add_line(StflString(tagstr), std::to_string(i));
 				i++;
 			}
 			break;

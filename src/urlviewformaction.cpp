@@ -126,8 +126,7 @@ void UrlViewFormAction::prepare()
 		unsigned int i = 0;
 		for (const auto& link : links) {
 			listfmt.add_line(
-				StflString(strprintf::fmt("%2u  %s", i + 1,
-						link.first)).get_stfl_quoted_string(),
+				StflString(strprintf::fmt("%2u  %s", i + 1, link.first)),
 				std::to_string(i));
 			i++;
 		}

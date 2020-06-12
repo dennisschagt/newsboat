@@ -343,7 +343,7 @@ void FileBrowserFormAction::add_file(ListFormatter& listfmt,
 				sizestr,
 				formattedfilename);
 		std::string id = strprintf::fmt("%c%s", ftype, Stfl::quote(filename));
-		listfmt.add_line(StflString(line).get_stfl_quoted_string(), id);
+		listfmt.add_line(StflString(line), id);
 	}
 }
 

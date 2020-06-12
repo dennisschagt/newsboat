@@ -202,24 +202,22 @@ void HelpFormAction::prepare()
 							"step 3 - line = %s",
 							line);
 					}
-					listfmt.add_line(line);
+					listfmt.add_line(StflString::from_quoted(line));
 				}
 			}
 			switch (i) {
 			case 0:
 				if (syskey_count > 0) {
-					listfmt.add_line("");
-					listfmt.add_line(
-						_("Generic bindings:"));
-					listfmt.add_line("");
+					listfmt.add_line(StflString(""));
+					listfmt.add_line(StflString(_("Generic bindings:")));
+					listfmt.add_line(StflString(""));
 				}
 				break;
 			case 1:
 				if (unbound_count > 0) {
-					listfmt.add_line("");
-					listfmt.add_line(
-						_("Unbound functions:"));
-					listfmt.add_line("");
+					listfmt.add_line(StflString(""));
+					listfmt.add_line(StflString(_("Unbound functions:")));
+					listfmt.add_line(StflString(""));
 				}
 				break;
 			}

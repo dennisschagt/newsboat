@@ -976,7 +976,7 @@ void ItemListFormAction::prepare()
 					width,
 					itemlist_format,
 					datetime_format);
-			listfmt.add_line(line, std::to_string(item.second));
+			listfmt.add_line(StflString::from_quoted(line), std::to_string(item.second));
 		}
 		break;
 

@@ -4,7 +4,6 @@
 #include <limits.h>
 
 #include "stflpp.h"
-#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 
@@ -17,12 +16,13 @@ ListFormatter::ListFormatter(RegexManager* r, const std::string& loc)
 
 ListFormatter::~ListFormatter() {}
 
-void ListFormatter::add_line(const std::string& text,
+void ListFormatter::add_line(const StflString& text,
 	const std::string& id,
 	unsigned int width)
 {
-	set_line(UINT_MAX, text, id, width);
-	LOG(Level::DEBUG, "ListFormatter::add_line: `%s'", text);
+	set_line(UINT_MAX, text.get_stfl_quoted_string(), id, width);
+	LOG(Level::DEBUG, "ListFormatter::add_line: `%s'",
+		text.get_stfl_quoted_string());
 }
 
 void ListFormatter::set_line(const unsigned int itempos,
@@ -70,7 +70,7 @@ void ListFormatter::add_lines(const std::vector<std::string>& thelines,
 	unsigned int width)
 {
 	for (const auto& line : thelines) {
-		add_line(utils::replace_all(line, "\t", "        "),
+		add_line(StflString::from_quoted(utils::replace_all(line, "\t", "        ")),
 			"",
 			width);
 	}

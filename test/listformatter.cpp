@@ -2,6 +2,8 @@
 
 #include "3rd-party/catch.hpp"
 
+#include "stflstring.h"
+
 using namespace newsboat;
 
 TEST_CASE("add_line(), add_lines(), get_lines_count() and clear()",
@@ -12,10 +14,10 @@ TEST_CASE("add_line(), add_lines(), get_lines_count() and clear()",
 	REQUIRE(fmt.get_lines_count() == 0);
 
 	SECTION("add_line() adds a line") {
-		fmt.add_line("one");
+		fmt.add_line(StflString::from_quoted("one"));
 		REQUIRE(fmt.get_lines_count() == 1);
 
-		fmt.add_line("two");
+		fmt.add_line(StflString::from_quoted("two"));
 		REQUIRE(fmt.get_lines_count() == 2);
 
 		SECTION("add_lines() adds multiple lines") {
@@ -36,9 +38,10 @@ TEST_CASE("add_line() splits overly long sequences to fit width",
 	ListFormatter fmt;
 
 	SECTION("ordinary text") {
-		fmt.add_line("123456789_", "", 10);
-		fmt.add_line("_987654321", "", 10);
-		fmt.add_line("ListFormatter doesn't care about word boundaries",
+		fmt.add_line(StflString::from_quoted("123456789_"), "", 10);
+		fmt.add_line(StflString::from_quoted("_987654321"), "", 10);
+		fmt.add_line(
+			StflString::from_quoted("ListFormatter doesn't care about word boundaries"),
 			"",
 			10);
 		std::string expected =
@@ -55,9 +58,10 @@ TEST_CASE("add_line() splits overly long sequences to fit width",
 	}
 
 	SECTION("numbered list") {
-		fmt.add_line("123456789_", "1", 10);
-		fmt.add_line("_987654321", "2", 10);
-		fmt.add_line("ListFormatter doesn't care about word boundaries",
+		fmt.add_line(StflString::from_quoted("123456789_"), "1", 10);
+		fmt.add_line(StflString::from_quoted("_987654321"), "2", 10);
+		fmt.add_line(
+			StflString::from_quoted("ListFormatter doesn't care about word boundaries"),
 			"3",
 			10);
 		std::string expected =
@@ -78,8 +82,8 @@ TEST_CASE("set_line() replaces the item in a list", "[ListFormatter]")
 {
 	ListFormatter fmt;
 
-	fmt.add_line("hello", "1", 5);
-	fmt.add_line("goodbye", "2", 5);
+	fmt.add_line(StflString::from_quoted("hello"), "1", 5);
+	fmt.add_line(StflString::from_quoted("goodbye"), "2", 5);
 
 	std::string expected =
 		"{list"
@@ -106,7 +110,7 @@ TEST_CASE("format_list() uses regex manager if one is passed",
 	RegexManager rxmgr;
 	ListFormatter fmt(&rxmgr, "article");
 
-	fmt.add_line("Highlight me please!");
+	fmt.add_line(StflString::from_quoted("Highlight me please!"));
 
 	// the choice of green text on red background does not reflect my
 	// personal taste (or lack thereof) :)

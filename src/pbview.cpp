@@ -98,7 +98,7 @@ void PbView::run(bool auto_download, bool wrap_scroll)
 			unsigned int i = 0;
 			for (const auto& dl : ctrl->downloads()) {
 				auto lbuf = format_line(formatstring, dl, i, width);
-				listfmt.add_line(lbuf, std::to_string(i));
+				listfmt.add_line(StflString::from_quoted(lbuf), std::to_string(i));
 				i++;
 			}
 
@@ -298,7 +298,7 @@ void PbView::run_help()
 		descline.append(24 - desc.cmd.length(), ' ');
 		descline.append(desc.desc);
 
-		listfmt.add_line(descline);
+		listfmt.add_line(StflString::from_quoted(descline));
 	}
 
 	help_textview.stfl_replace_lines(listfmt.get_lines_count(),

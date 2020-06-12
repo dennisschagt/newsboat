@@ -58,7 +58,7 @@ void DialogsFormAction::prepare()
 							get_parent_formaction().get())
 						? "*"
 						: " ",
-						fa.second)).get_stfl_quoted_string(),
+						fa.second)),
 				std::to_string(fa.first));
 			i++;
 		}

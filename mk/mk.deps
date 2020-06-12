@@ -371,9 +371,8 @@ src/listformatter.o: src/listformatter.cpp include/listformatter.h \
  include/regexmanager.h include/configparser.h \
  include/configactionhandler.h include/matcher.h filter/FilterParser.h \
  include/regexowner.h include/stflstring.h include/stflpp.h \
- include/stflstring.h include/strprintf.h include/utils.h \
- 3rd-party/optional.hpp include/configcontainer.h include/logger.h \
- config.h include/strprintf.h
+ include/strprintf.h include/utils.h 3rd-party/optional.hpp \
+ include/configcontainer.h include/logger.h config.h include/strprintf.h
 src/listwidget.o: src/listwidget.cpp include/listwidget.h \
  include/listformatter.h include/regexmanager.h include/configparser.h \
  include/configactionhandler.h include/matcher.h filter/FilterParser.h \
@@ -779,7 +778,8 @@ test/keymap.o: test/keymap.cpp include/keymap.h include/configparser.h \
 test/listformatter.o: test/listformatter.cpp include/listformatter.h \
  include/regexmanager.h include/configparser.h \
  include/configactionhandler.h include/matcher.h filter/FilterParser.h \
- include/regexowner.h include/stflstring.h 3rd-party/catch.hpp
+ include/regexowner.h include/stflstring.h 3rd-party/catch.hpp \
+ include/stflstring.h
 test/matcher.o: test/matcher.cpp include/matcher.h filter/FilterParser.h \
  3rd-party/catch.hpp include/matchable.h 3rd-party/optional.hpp \
  include/matcherexception.h test/test-helpers/stringmaker/optional.h
