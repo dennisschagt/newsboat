@@ -211,8 +211,8 @@ src/feedlistformaction.o: src/feedlistformaction.cpp \
  include/dbexception.h include/feedcontainer.h include/fmtstrformatter.h \
  include/listformatter.h include/logger.h include/strprintf.h \
  include/reloader.h include/rssfeed.h include/utils.h include/logger.h \
- include/scopemeasure.h include/stflstring.h include/strprintf.h \
- include/utils.h include/view.h
+ include/scopemeasure.h include/strprintf.h include/utils.h \
+ include/view.h
 src/filebrowserformaction.o: src/filebrowserformaction.cpp \
  include/filebrowserformaction.h include/configcontainer.h \
  include/configparser.h include/configactionhandler.h \

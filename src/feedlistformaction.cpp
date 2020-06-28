@@ -16,7 +16,6 @@
 #include "reloader.h"
 #include "rssfeed.h"
 #include "scopemeasure.h"
-#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 #include "view.h"
@@ -579,10 +578,10 @@ void FeedListFormAction::set_feedlist(
 	update_visible_feeds(feeds);
 
 	for (const auto& feed : visible_feeds) {
-		listfmt.add_line(StflString::from_quoted(format_line(feedlist_format,
-					feed.first,
-					feed.second,
-					width)),
+		listfmt.add_line(format_line(feedlist_format,
+				feed.first,
+				feed.second,
+				width),
 			std::to_string(feed.second));
 	}
 
@@ -1010,7 +1009,7 @@ std::string FeedListFormAction::get_title(std::shared_ptr<RssFeed> feed)
 	return title;
 }
 
-std::string FeedListFormAction::format_line(const std::string& feedlist_format,
+StflString FeedListFormAction::format_line(const std::string& feedlist_format,
 	std::shared_ptr<RssFeed> feed,
 	unsigned int pos,
 	unsigned int width)
@@ -1034,12 +1033,12 @@ std::string FeedListFormAction::format_line(const std::string& feedlist_format,
 	fmt.register_fmt('d', utils::utf8_to_locale(feed->description()));
 
 	auto formattedLine = fmt.do_format(feedlist_format, width);
-	formattedLine = StflString(formattedLine).get_stfl_quoted_string();
+	auto escapedLine = StflString(formattedLine);
 	if (unread_count > 0) {
-		formattedLine = strprintf::fmt("<unread>%s</>", formattedLine);
+		escapedLine.apply_style("<unread>", 0, formattedLine.length());
 	}
 
-	return formattedLine;
+	return escapedLine;
 }
 
 std::string FeedListFormAction::title()
