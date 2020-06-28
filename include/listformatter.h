@@ -20,8 +20,6 @@ public:
 	void add_line(const StflString& text,
 		const std::string& id = "",
 		unsigned int width = 0);
-	void add_lines(const std::vector<std::string>& lines,
-		unsigned int width = 0);
 	void set_line(const unsigned int itempos,
 		const std::string& text,
 		const std::string& id = "",
