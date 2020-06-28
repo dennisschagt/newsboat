@@ -466,9 +466,8 @@ src/pbview.o: src/pbview.cpp include/pbview.h include/colormanager.h \
  include/fmtstrformatter.h stfl/help.h include/listformatter.h \
  include/logger.h include/strprintf.h include/pbcontroller.h \
  include/configcontainer.h include/download.h include/fslock.h \
- include/queueloader.h include/poddlthread.h include/stflstring.h \
- include/strprintf.h include/utils.h 3rd-party/optional.hpp \
- include/logger.h
+ include/queueloader.h include/poddlthread.h include/strprintf.h \
+ include/utils.h 3rd-party/optional.hpp include/logger.h
 src/poddlthread.o: src/poddlthread.cpp include/poddlthread.h \
  include/configcontainer.h include/configparser.h \
  include/configactionhandler.h include/download.h config.h \

@@ -6,6 +6,7 @@
 #include "listwidget.h"
 #include "textviewwidget.h"
 #include "stflpp.h"
+#include "stflstring.h"
 
 using namespace newsboat;
 
@@ -40,7 +41,7 @@ private:
 	std::pair<double, std::string> get_speed_human_readable(double kbps);
 
 	std::string prepare_keymaphint(KeyMapHintEntry* hints);
-	std::string format_line(const std::string& podlist_format,
+	StflString format_line(const std::string& podlist_format,
 		const Download& dl,
 		unsigned int pos,
 		unsigned int width);

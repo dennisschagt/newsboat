@@ -17,7 +17,6 @@
 #include "logger.h"
 #include "pbcontroller.h"
 #include "poddlthread.h"
-#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 
@@ -98,7 +97,7 @@ void PbView::run(bool auto_download, bool wrap_scroll)
 			unsigned int i = 0;
 			for (const auto& dl : ctrl->downloads()) {
 				auto lbuf = format_line(formatstring, dl, i, width);
-				listfmt.add_line(StflString::from_quoted(lbuf), std::to_string(i));
+				listfmt.add_line(lbuf, std::to_string(i));
 				i++;
 			}
 
@@ -385,7 +384,7 @@ void PbView::set_dllist_keymap_hint()
 	dllist_form.set("help", keymap_hint);
 }
 
-std::string PbView::format_line(const std::string& podlist_format,
+StflString PbView::format_line(const std::string& podlist_format,
 	const Download& dl,
 	unsigned int pos,
 	unsigned int width)
@@ -409,8 +408,7 @@ std::string PbView::format_line(const std::string& podlist_format,
 	fmt.register_fmt('b', strprintf::fmt("%s", dl.basename()));
 
 	auto formattedLine = fmt.do_format(podlist_format, width);
-	formattedLine = StflString(formattedLine).get_stfl_quoted_string();
-	return formattedLine;
+	return StflString(formattedLine);
 }
 
 } // namespace podboat
