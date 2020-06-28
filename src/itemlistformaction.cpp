@@ -16,7 +16,6 @@
 #include "matcherexception.h"
 #include "rssfeed.h"
 #include "scopemeasure.h"
-#include "stflstring.h"
 #include "strprintf.h"
 #include "utils.h"
 #include "view.h"
@@ -976,7 +975,7 @@ void ItemListFormAction::prepare()
 					width,
 					itemlist_format,
 					datetime_format);
-			listfmt.add_line(StflString::from_quoted(line), std::to_string(item.second));
+			listfmt.add_line(line, std::to_string(item.second));
 		}
 		break;
 
@@ -987,7 +986,8 @@ void ItemListFormAction::prepare()
 					width,
 					itemlist_format,
 					datetime_format);
-			listfmt.set_line(itempos, line, std::to_string(item.second));
+			listfmt.set_line(itempos, line.get_stfl_quoted_string(),
+				std::to_string(item.second));
 		}
 		break;
 	case InvalidationMode::NONE:
@@ -1007,7 +1007,7 @@ void ItemListFormAction::prepare()
 	prepare_set_filterpos();
 }
 
-std::string ItemListFormAction::item2formatted_line(const ItemPtrPosPair& item,
+StflString ItemListFormAction::item2formatted_line(const ItemPtrPosPair& item,
 	const unsigned int width,
 	const std::string& itemlist_format,
 	const std::string& datetime_format)
@@ -1040,18 +1040,19 @@ std::string ItemListFormAction::item2formatted_line(const ItemPtrPosPair& item,
 	fmt.register_fmt('L', item.first->length());
 
 	auto formattedLine = fmt.do_format(itemlist_format, width);
-	formattedLine = StflString(formattedLine).get_stfl_quoted_string();
+	auto escapedLine = StflString(formattedLine);
 
 	const int id = rxman.article_matches(item.first.get());
-	if (id != -1) {
-		formattedLine = strprintf::fmt("<%d>%s</>", id, formattedLine);
-	}
-
 	if (item.first->unread()) {
-		formattedLine = strprintf::fmt("<unread>%s</>", formattedLine);
+		escapedLine.apply_style("<unread>", 0, formattedLine.size());
 	}
 
-	return formattedLine;
+	if (id != -1) {
+		auto tag = strprintf::fmt("<%d>", id);
+		escapedLine.apply_style(tag, 0, formattedLine.size());
+	}
+
+	return escapedLine;
 }
 
 void ItemListFormAction::init()

@@ -318,7 +318,7 @@ src/itemlistformaction.o: src/itemlistformaction.cpp \
  include/dbexception.h include/fmtstrformatter.h include/logger.h \
  include/strprintf.h include/matcherexception.h include/rssfeed.h \
  include/utils.h include/logger.h include/scopemeasure.h \
- include/stflstring.h include/strprintf.h include/utils.h include/view.h
+ include/strprintf.h include/utils.h include/view.h
 src/itemrenderer.o: src/itemrenderer.cpp include/itemrenderer.h \
  include/htmlrenderer.h include/textformatter.h include/regexmanager.h \
  include/configparser.h include/configactionhandler.h include/matcher.h \
