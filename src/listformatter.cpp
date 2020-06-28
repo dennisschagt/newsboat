@@ -74,14 +74,12 @@ std::string ListFormatter::format_list() const
 		if (rxman) {
 			rxman->quote_and_highlight(str, location);
 		}
+		std::string quoted_str = Stfl::quote(str.get_stfl_quoted_string());
 		if (line.second.empty()) {
-			format_cache.append(strprintf::fmt(
-					"{listitem text:%s}", Stfl::quote(str.get_stfl_quoted_string())));
+			format_cache.append(strprintf::fmt("{listitem text:%s}", quoted_str));
 		} else {
 			format_cache.append(
-				strprintf::fmt("{listitem[%s] text:%s}",
-					line.second,
-					Stfl::quote(str.get_stfl_quoted_string())));
+				strprintf::fmt("{listitem[%s] text:%s}", line.second, quoted_str));
 		}
 	}
 	format_cache.push_back('}');
