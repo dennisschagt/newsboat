@@ -36,15 +36,16 @@ extern "C" {
 #include "helpformaction.h"
 #include "htmlrenderer.h"
 #include "itemlist.h"
-#include "itemlistformaction.h"
 #include "itemview.h"
 #include "itemviewformaction.h"
 #include "keymap.h"
 #include "logger.h"
 #include "matcherexception.h"
 #include "regexmanager.h"
+#include "regularitemlistformaction.h"
 #include "reloadthread.h"
 #include "rssfeed.h"
+#include "searchitemlistformaction.h"
 #include "selectformaction.h"
 #include "selecttag.h"
 #include "strprintf.h"
@@ -403,8 +404,8 @@ void View::push_searchresult(std::shared_ptr<RssFeed> feed,
 	LOG(Level::DEBUG, "View::push_searchresult: pushing search result");
 
 	if (feed->total_item_count() > 0) {
-		std::shared_ptr<ItemListFormAction> searchresult(
-			new ItemListFormAction(
+		std::shared_ptr<SearchItemListFormAction> searchresult(
+			new SearchItemListFormAction(
 				this, itemlist_str, rsscache, filters, cfg, rxman));
 		searchresult->set_feed(feed);
 		searchresult->set_show_searchresult(true);
@@ -419,7 +420,7 @@ void View::push_searchresult(std::shared_ptr<RssFeed> feed,
 	}
 }
 
-std::shared_ptr<ItemListFormAction> View::push_itemlist(
+std::shared_ptr<RegularItemListFormAction> View::push_itemlist(
 	std::shared_ptr<RssFeed> feed)
 {
 	assert(feed != nullptr);
@@ -429,8 +430,8 @@ std::shared_ptr<ItemListFormAction> View::push_itemlist(
 	prepare_query_feed(feed);
 
 	if (feed->total_item_count() > 0) {
-		std::shared_ptr<ItemListFormAction> itemlist(
-			new ItemListFormAction(
+		std::shared_ptr<RegularItemListFormAction> itemlist(
+			new RegularItemListFormAction(
 				this, itemlist_str, rsscache, filters, cfg, rxman));
 		itemlist->set_feed(feed);
 		itemlist->set_show_searchresult(false);

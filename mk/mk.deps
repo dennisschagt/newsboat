@@ -470,6 +470,21 @@ src/regexmanager.o: src/regexmanager.cpp include/regexmanager.h \
  include/strprintf.h include/utils.h 3rd-party/optional.hpp \
  include/configcontainer.h include/logger.h
 src/regexowner.o: src/regexowner.cpp include/regexowner.h
+src/regularitemlistformaction.o: src/regularitemlistformaction.cpp \
+ include/regularitemlistformaction.h include/itemlistformaction.h \
+ 3rd-party/optional.hpp include/history.h include/listformaction.h \
+ include/formaction.h include/keymap.h include/configparser.h \
+ include/configactionhandler.h include/stflpp.h include/listwidget.h \
+ include/listformatter.h include/regexmanager.h include/matcher.h \
+ filter/FilterParser.h include/regexowner.h include/view.h \
+ include/colormanager.h include/configcontainer.h include/controller.h \
+ include/cache.h include/feedcontainer.h include/filtercontainer.h \
+ include/fslock.h include/opml.h include/fileurlreader.h \
+ include/urlreader.h include/queuemanager.h include/reloader.h \
+ include/remoteapi.h include/rssignores.h include/rssitem.h \
+ include/matchable.h include/dirbrowserformaction.h \
+ include/feedlistformaction.h include/filebrowserformaction.h \
+ include/htmlrenderer.h include/textformatter.h
 src/reloader.o: src/reloader.cpp include/reloader.h \
  include/configcontainer.h include/configparser.h \
  include/configactionhandler.h include/controller.h include/cache.h \
@@ -545,6 +560,21 @@ src/rssparser.o: src/rssparser.cpp include/rssparser.h \
  include/ttrssapi.h 3rd-party/json.hpp include/cache.h include/utils.h
 src/ruststring.o: src/ruststring.cpp include/ruststring.h
 src/scopemeasure.o: src/scopemeasure.cpp include/scopemeasure.h
+src/searchitemlistformaction.o: src/searchitemlistformaction.cpp \
+ include/searchitemlistformaction.h include/itemlistformaction.h \
+ 3rd-party/optional.hpp include/history.h include/listformaction.h \
+ include/formaction.h include/keymap.h include/configparser.h \
+ include/configactionhandler.h include/stflpp.h include/listwidget.h \
+ include/listformatter.h include/regexmanager.h include/matcher.h \
+ filter/FilterParser.h include/regexowner.h include/view.h \
+ include/colormanager.h include/configcontainer.h include/controller.h \
+ include/cache.h include/feedcontainer.h include/filtercontainer.h \
+ include/fslock.h include/opml.h include/fileurlreader.h \
+ include/urlreader.h include/queuemanager.h include/reloader.h \
+ include/remoteapi.h include/rssignores.h include/rssitem.h \
+ include/matchable.h include/dirbrowserformaction.h \
+ include/feedlistformaction.h include/filebrowserformaction.h \
+ include/htmlrenderer.h include/textformatter.h
 src/selectformaction.o: src/selectformaction.cpp \
  include/selectformaction.h include/filtercontainer.h \
  include/configparser.h include/configactionhandler.h \
@@ -638,13 +668,14 @@ src/view.o: src/view.cpp include/view.h 3rd-party/optional.hpp \
  include/exception.h stfl/feedlist.h stfl/filebrowser.h \
  include/fmtstrformatter.h include/formaction.h stfl/help.h \
  include/helpformaction.h include/textviewwidget.h include/htmlrenderer.h \
- stfl/itemlist.h include/itemlistformaction.h stfl/itemview.h \
- include/itemviewformaction.h include/keymap.h include/logger.h \
- include/strprintf.h include/matcherexception.h include/regexmanager.h \
+ stfl/itemlist.h stfl/itemview.h include/itemviewformaction.h \
+ include/keymap.h include/logger.h include/strprintf.h \
+ include/matcherexception.h include/regexmanager.h \
+ include/regularitemlistformaction.h include/itemlistformaction.h \
  include/reloadthread.h include/rssfeed.h include/utils.h \
- include/logger.h include/selectformaction.h stfl/selecttag.h \
- include/strprintf.h stfl/urlview.h include/urlviewformaction.h \
- include/utils.h
+ include/logger.h include/searchitemlistformaction.h \
+ include/selectformaction.h stfl/selecttag.h include/strprintf.h \
+ stfl/urlview.h include/urlviewformaction.h include/utils.h
 test/cache.o: test/cache.cpp include/cache.h include/configcontainer.h \
  include/configparser.h include/configactionhandler.h 3rd-party/catch.hpp \
  include/configcontainer.h include/rssfeed.h include/matchable.h \
@@ -710,17 +741,18 @@ test/htmlrenderer.o: test/htmlrenderer.cpp include/htmlrenderer.h \
  include/utils.h 3rd-party/optional.hpp include/configcontainer.h \
  include/logger.h config.h include/strprintf.h
 test/itemlistformaction.o: test/itemlistformaction.cpp \
- include/itemlistformaction.h 3rd-party/optional.hpp include/history.h \
- include/listformaction.h include/formaction.h include/keymap.h \
- include/configparser.h include/configactionhandler.h include/stflpp.h \
- include/listwidget.h include/listformatter.h include/regexmanager.h \
- include/matcher.h filter/FilterParser.h include/regexowner.h \
- include/view.h include/colormanager.h include/configcontainer.h \
- include/controller.h include/cache.h include/feedcontainer.h \
- include/filtercontainer.h include/fslock.h include/opml.h \
- include/fileurlreader.h include/urlreader.h include/queuemanager.h \
- include/reloader.h include/remoteapi.h include/rssignores.h \
- include/rssitem.h include/matchable.h include/dirbrowserformaction.h \
+ include/regularitemlistformaction.h include/itemlistformaction.h \
+ 3rd-party/optional.hpp include/history.h include/listformaction.h \
+ include/formaction.h include/keymap.h include/configparser.h \
+ include/configactionhandler.h include/stflpp.h include/listwidget.h \
+ include/listformatter.h include/regexmanager.h include/matcher.h \
+ filter/FilterParser.h include/regexowner.h include/view.h \
+ include/colormanager.h include/configcontainer.h include/controller.h \
+ include/cache.h include/feedcontainer.h include/filtercontainer.h \
+ include/fslock.h include/opml.h include/fileurlreader.h \
+ include/urlreader.h include/queuemanager.h include/reloader.h \
+ include/remoteapi.h include/rssignores.h include/rssitem.h \
+ include/matchable.h include/dirbrowserformaction.h \
  include/feedlistformaction.h include/filebrowserformaction.h \
  include/htmlrenderer.h include/textformatter.h 3rd-party/catch.hpp \
  include/cache.h include/configpaths.h include/cliargsparser.h \

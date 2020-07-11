@@ -23,6 +23,7 @@
 namespace newsboat {
 
 class ItemListFormAction;
+class RegularItemListFormAction;
 class ItemViewFormAction;
 class FeedListFormAction;
 
@@ -64,7 +65,8 @@ public:
 	char confirm(const std::string& prompt, const std::string& charset);
 
 	void push_itemlist(unsigned int pos);
-	std::shared_ptr<ItemListFormAction> push_itemlist(std::shared_ptr<RssFeed>
+	std::shared_ptr<RegularItemListFormAction> push_itemlist(
+		std::shared_ptr<RssFeed>
 		feed);
 	void push_itemview(std::shared_ptr<RssFeed> f,
 		const std::string& guid,
