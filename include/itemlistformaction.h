@@ -70,14 +70,22 @@ public:
 	void recalculate_form() override;
 
 protected:
+	bool process_operation(Operation op,
+		bool automatic = false,
+		std::vector<std::string>* args = nullptr) override;
+
+	void invalidate_everything()
+	{
+		invalidation_mode = InvalidationMode::COMPLETE;
+	}
+
 	bool show_searchresult;
+
+	unsigned int pos;
 
 private:
 	void register_format_styles();
 
-	bool process_operation(Operation op,
-		bool automatic = false,
-		std::vector<std::string>* args = nullptr) override;
 	void set_head(const std::string& s,
 		unsigned int unread,
 		unsigned int total,
@@ -99,11 +107,6 @@ private:
 
 	void prepare_set_filterpos();
 
-	void invalidate_everything()
-	{
-		invalidation_mode = InvalidationMode::COMPLETE;
-	}
-
 	void invalidate(const unsigned int invalidated_pos)
 	{
 		if (invalidation_mode == InvalidationMode::COMPLETE) {
@@ -119,7 +122,6 @@ private:
 		const std::string& itemlist_format,
 		const std::string& datetime_format);
 
-	unsigned int pos;
 	std::shared_ptr<RssFeed> feed;
 	bool apply_filter;
 	Matcher matcher;

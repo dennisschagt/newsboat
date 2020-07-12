@@ -1,5 +1,7 @@
 #include "regularitemlistformaction.h"
 
+#include "logger.h"
+
 namespace newsboat {
 
 RegularItemListFormAction::RegularItemListFormAction(View* vv,
@@ -8,6 +10,23 @@ RegularItemListFormAction::RegularItemListFormAction(View* vv,
 	: ItemListFormAction(vv, formstr, cc, f, cfg, r)
 {
 	show_searchresult = false;
+}
+
+bool RegularItemListFormAction::process_operation(Operation op,
+	bool automatic,
+	std::vector<std::string>* args)
+{
+	switch (op) {
+	case OP_RELOAD:
+		LOG(Level::INFO, "ItemListFormAction: reloading current feed");
+		v->get_ctrl()->get_reloader()->reload(pos);
+		invalidate_everything();
+		break;
+	default:
+		ItemListFormAction::process_operation(op, automatic, args);
+		break;
+	}
+	return true;
 }
 
 } // namespace newsboat

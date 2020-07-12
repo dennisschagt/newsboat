@@ -400,17 +400,6 @@ bool ItemListFormAction::process_operation(Operation op,
 	case OP_HELP:
 		v->push_help();
 		break;
-	case OP_RELOAD:
-		if (!show_searchresult) {
-			LOG(Level::INFO,
-				"ItemListFormAction: reloading current feed");
-			v->get_ctrl()->get_reloader()->reload(pos);
-			invalidate_everything();
-		} else {
-			v->show_error(
-				_("Error: you can't reload search results."));
-		}
-		break;
 	case OP_QUIT:
 		LOG(Level::INFO, "ItemListFormAction: quitting");
 		v->feedlist_mark_pos_if_visible(pos);
