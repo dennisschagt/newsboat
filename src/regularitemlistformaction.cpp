@@ -7,6 +7,7 @@ RegularItemListFormAction::RegularItemListFormAction(View* vv,
 	RegexManager& r)
 	: ItemListFormAction(vv, formstr, cc, f, cfg, r)
 {
+	show_searchresult = false;
 }
 
 } // namespace newsboat

@@ -408,7 +408,6 @@ void View::push_searchresult(std::shared_ptr<RssFeed> feed,
 			new SearchItemListFormAction(
 				this, itemlist_str, rsscache, filters, cfg, rxman));
 		searchresult->set_feed(feed);
-		searchresult->set_show_searchresult(true);
 		searchresult->set_searchphrase(phrase);
 		apply_colors(searchresult);
 		searchresult->set_parent_formaction(get_current_formaction());
@@ -434,7 +433,6 @@ std::shared_ptr<RegularItemListFormAction> View::push_itemlist(
 			new RegularItemListFormAction(
 				this, itemlist_str, rsscache, filters, cfg, rxman));
 		itemlist->set_feed(feed);
-		itemlist->set_show_searchresult(false);
 		apply_colors(itemlist);
 		itemlist->set_parent_formaction(get_current_formaction());
 		itemlist->init();

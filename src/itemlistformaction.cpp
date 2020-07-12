@@ -29,9 +29,9 @@ ItemListFormAction::ItemListFormAction(View* vv,
 	ConfigContainer* cfg,
 	RegexManager& r)
 	: ListFormAction(vv, formstr, "items", cfg)
+	, show_searchresult(false)
 	, pos(0)
 	, apply_filter(false)
-	, show_searchresult(false)
 	, set_filterpos(false)
 	, filterpos(0)
 	, rxman(r)

@@ -62,16 +62,15 @@ public:
 
 	void finished_qna(Operation op) override;
 
-	void set_show_searchresult(bool b)
-	{
-		show_searchresult = b;
-	}
 	void set_searchphrase(const std::string& s)
 	{
 		searchphrase = s;
 	}
 
 	void recalculate_form() override;
+
+protected:
+	bool show_searchresult;
 
 private:
 	void register_format_styles();
@@ -125,7 +124,6 @@ private:
 	bool apply_filter;
 	Matcher matcher;
 	std::vector<ItemPtrPosPair> visible_items;
-	bool show_searchresult;
 	std::string searchphrase;
 
 	History filterhistory;
