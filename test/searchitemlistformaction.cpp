@@ -1,4 +1,4 @@
-#include "regularitemlistformaction.h"
+#include "searchitemlistformaction.h"
 
 #include <fstream>
 #include <unistd.h>
@@ -10,14 +10,15 @@
 #include "itemlist.h"
 #include "keymap.h"
 #include "regexmanager.h"
+#include "regularitemlistformaction.h"
 #include "rssfeed.h"
 #include "test-helpers/misc.h"
 #include "test-helpers/tempfile.h"
 
 using namespace newsboat;
 
-TEST_CASE("OP_OPEN displays article using an external pager",
-	"[ItemListFormAction]")
+TEST_CASE("SearchItemList: OP_OPEN displays article using an external pager",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -56,7 +57,7 @@ TEST_CASE("OP_OPEN displays article using an external pager",
 	v.set_config_container(&cfg);
 	c.set_view(&v);
 
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 	itemlist.set_feed(feed);
 
@@ -70,8 +71,8 @@ TEST_CASE("OP_OPEN displays article using an external pager",
 		test_description);
 }
 
-TEST_CASE("OP_PURGE_DELETED purges previously deleted items",
-	"[ItemListFormAction]")
+TEST_CASE("SearchItemList: OP_PURGE_DELETED purges previously deleted items",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -87,7 +88,7 @@ TEST_CASE("OP_PURGE_DELETED purges previously deleted items",
 	v.set_config_container(&cfg);
 	c.set_view(&v);
 
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 	itemlist.set_feed(feed);
 
@@ -104,8 +105,8 @@ TEST_CASE("OP_PURGE_DELETED purges previously deleted items",
 }
 
 TEST_CASE(
-	"OP_OPENBROWSER_AND_MARK passes the url to the browser and marks read",
-	"[ItemListFormAction]")
+	"SearchItemList: OP_OPENBROWSER_AND_MARK passes the url to the browser and marks read",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -131,7 +132,7 @@ TEST_CASE(
 	v.set_config_container(&cfg);
 	c.set_view(&v);
 
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 	itemlist.set_feed(feed);
 	itemlist.process_op(OP_OPENBROWSER_AND_MARK);
@@ -144,8 +145,8 @@ TEST_CASE(
 }
 
 TEST_CASE(
-	"OP_OPENBROWSER_AND_MARK does not mark read when browser fails",
-	"[ItemListFormAction]")
+	"SearchItemList: OP_OPENBROWSER_AND_MARK does not mark read when browser fails",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -169,7 +170,7 @@ TEST_CASE(
 	v.set_config_container(&cfg);
 	c.set_view(&v);
 
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 	itemlist.set_feed(feed);
 	itemlist.process_op(OP_OPENBROWSER_AND_MARK);
@@ -177,8 +178,8 @@ TEST_CASE(
 	REQUIRE(feed->unread_item_count() == 1);
 }
 
-TEST_CASE("OP_OPENINBROWSER passes the url to the browser",
-	"[ItemListFormAction]")
+TEST_CASE("SearchItemList: OP_OPENINBROWSER passes the url to the browser",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -202,7 +203,7 @@ TEST_CASE("OP_OPENINBROWSER passes the url to the browser",
 	v.set_config_container(&cfg);
 	c.set_view(&v);
 
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 	itemlist.set_feed(feed);
 	itemlist.process_op(OP_OPENINBROWSER);
@@ -212,8 +213,8 @@ TEST_CASE("OP_OPENINBROWSER passes the url to the browser",
 	REQUIRE(line == test_url);
 }
 
-TEST_CASE("OP_OPENALLUNREADINBROWSER passes the url list to the browser",
-	"[ItemListFormAction]")
+TEST_CASE("SearchItemList: OP_OPENALLUNREADINBROWSER passes the url list to the browser",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -245,7 +246,7 @@ TEST_CASE("OP_OPENALLUNREADINBROWSER passes the url list to the browser",
 	v.set_config_container(&cfg);
 	c.set_view(&v);
 
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 	itemlist.set_feed(feed);
 
@@ -296,9 +297,9 @@ TEST_CASE("OP_OPENALLUNREADINBROWSER passes the url list to the browser",
 }
 
 TEST_CASE(
-	"OP_OPENALLUNREADINBROWSER_AND_MARK passes the url list to the browser "
+	"SearchItemList: OP_OPENALLUNREADINBROWSER_AND_MARK passes the url list to the browser "
 	"and marks them read",
-	"[ItemListFormAction]")
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -330,7 +331,7 @@ TEST_CASE(
 	v.set_config_container(&cfg);
 	c.set_view(&v);
 
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 	itemlist.set_feed(feed);
 
@@ -382,7 +383,8 @@ TEST_CASE(
 	}
 }
 
-TEST_CASE("OP_SHOWURLS shows the article's properties", "[ItemListFormAction]")
+TEST_CASE("SearchItemList: OP_SHOWURLS shows the article's properties",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -415,7 +417,7 @@ TEST_CASE("OP_SHOWURLS shows the article's properties", "[ItemListFormAction]")
 	item->set_author(test_author);
 	item->set_description(test_description);
 	item->set_pubDate(test_pubDate);
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 
 	SECTION("with external-url-viewer") {
@@ -445,8 +447,8 @@ TEST_CASE("OP_SHOWURLS shows the article's properties", "[ItemListFormAction]")
 	}
 }
 
-TEST_CASE("OP_BOOKMARK pipes articles url and title to bookmark-command",
-	"[ItemListFormAction]")
+TEST_CASE("SearchItemList: OP_BOOKMARK pipes articles url and title to bookmark-command",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -475,7 +477,7 @@ TEST_CASE("OP_BOOKMARK pipes articles url and title to bookmark-command",
 	item->set_link(test_url);
 	item->set_title(test_title);
 
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 
 	feed->add_item(item);
@@ -495,8 +497,8 @@ TEST_CASE("OP_BOOKMARK pipes articles url and title to bookmark-command",
 		separator + feed_title);
 }
 
-TEST_CASE("OP_EDITFLAGS arguments are added to an item's flags",
-	"[ItemListFormAction]")
+TEST_CASE("SearchItemList: OP_EDITFLAGS arguments are added to an item's flags",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -514,7 +516,7 @@ TEST_CASE("OP_EDITFLAGS arguments are added to an item's flags",
 	std::shared_ptr<RssFeed> feed = std::make_shared<RssFeed>(&rsscache);
 	std::shared_ptr<RssItem> item = std::make_shared<RssItem>(&rsscache);
 
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 
 	feed->add_item(item);
@@ -585,8 +587,8 @@ TEST_CASE("OP_EDITFLAGS arguments are added to an item's flags",
 	}
 }
 
-TEST_CASE("OP_SAVE writes an article's attributes to the specified file",
-	"[ItemListFormAction]")
+TEST_CASE("SearchItemList: OP_SAVE writes an article's attributes to the specified file",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -623,7 +625,7 @@ TEST_CASE("OP_SAVE writes an article's attributes to the specified file",
 	item->set_pubDate(test_pubDate);
 	item->set_description(test_description);
 
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 
 	feed->add_item(item);
@@ -639,7 +641,8 @@ TEST_CASE("OP_SAVE writes an article's attributes to the specified file",
 		test_description);
 }
 
-TEST_CASE("OP_HELP command is processed", "[ItemListFormAction]")
+TEST_CASE("SearchItemList: OP_HELP command is processed",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -663,7 +666,8 @@ TEST_CASE("OP_HELP command is processed", "[ItemListFormAction]")
 	REQUIRE_NOTHROW(itemlist->process_op(OP_HELP));
 }
 
-TEST_CASE("OP_HARDQUIT command is processed", "[ItemListFormAction]")
+TEST_CASE("SearchItemList: OP_HARDQUIT command is processed",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -681,15 +685,15 @@ TEST_CASE("OP_HARDQUIT command is processed", "[ItemListFormAction]")
 
 	std::shared_ptr<RssFeed> feed = std::make_shared<RssFeed>(&rsscache);
 
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 	itemlist.set_feed(feed);
 
 	REQUIRE_NOTHROW(itemlist.process_op(OP_HARDQUIT));
 }
 
-TEST_CASE("Navigate back and forth using OP_NEXT and OP_PREVIOUS",
-	"[ItemListFormAction]")
+TEST_CASE("SearchItemList: Navigate back and forth using OP_NEXT and OP_PREVIOUS",
+	"[SearchItemListFormAction]")
 {
 	// We are using the OP_SHOWURLS command to print the current
 	// article'attibutes to a file, and assert the position was indeed
@@ -724,6 +728,7 @@ TEST_CASE("Navigate back and forth using OP_NEXT and OP_PREVIOUS",
 	item2->set_title(second_article_title);
 	feed->add_item(item2);
 
+	// TODO: Make SearchItemListFormAction specific
 	std::shared_ptr<RegularItemListFormAction> itemlist = v.push_itemlist(feed);
 
 	REQUIRE_NOTHROW(itemlist->process_op(OP_NEXT));
@@ -741,8 +746,8 @@ TEST_CASE("Navigate back and forth using OP_NEXT and OP_PREVIOUS",
 	REQUIRE(line == prefix_title + first_article_title);
 }
 
-TEST_CASE("OP_TOGGLESHOWREAD switches the value of show-read-articles",
-	"[ItemListFormAction]")
+TEST_CASE("SearchItemList: OP_TOGGLESHOWREAD switches the value of show-read-articles",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -761,6 +766,7 @@ TEST_CASE("OP_TOGGLESHOWREAD switches the value of show-read-articles",
 	std::shared_ptr<RssItem> item = std::make_shared<RssItem>(&rsscache);
 	feed->add_item(item);
 
+	// TODO: Make SearchItemListFormAction specific
 	std::shared_ptr<RegularItemListFormAction> itemlist = v.push_itemlist(feed);
 
 	SECTION("True to False") {
@@ -777,8 +783,8 @@ TEST_CASE("OP_TOGGLESHOWREAD switches the value of show-read-articles",
 	}
 }
 
-TEST_CASE("OP_PIPE_TO pipes an article's content to an external command",
-	"[ItemListFormAction]")
+TEST_CASE("SearchItemList: OP_PIPE_TO pipes an article's content to an external command",
+	"[SearchItemListFormAction]")
 {
 	ConfigPaths paths;
 	Controller c(paths);
@@ -815,7 +821,7 @@ TEST_CASE("OP_PIPE_TO pipes an article's content to an external command",
 	item->set_pubDate(test_pubDate);
 	item->set_description(test_description);
 
-	RegularItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
+	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
 		rxman);
 
 	feed->add_item(item);
