@@ -29,4 +29,9 @@ bool RegularItemListFormAction::process_operation(Operation op,
 	return true;
 }
 
+std::string RegularItemListFormAction::get_title_format()
+{
+	return cfg->get_configvalue("articlelist-title-format");
+}
+
 } // namespace newsboat

@@ -23,6 +23,8 @@ private:
 	bool process_operation(Operation op,
 		bool automatic = false,
 		std::vector<std::string>* args = nullptr) override;
+
+	std::string get_title_format() override;
 };
 
 } // namespace newsboat

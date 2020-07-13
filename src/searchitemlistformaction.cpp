@@ -27,4 +27,9 @@ bool SearchItemListFormAction::process_operation(Operation op,
 	return true;
 }
 
+std::string SearchItemListFormAction::get_title_format()
+{
+	return cfg->get_configvalue("searchresult-title-format");
+}
+
 } // namespace newsboat

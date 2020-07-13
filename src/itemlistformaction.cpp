@@ -1059,11 +1059,6 @@ void ItemListFormAction::set_head(const std::string& s,
 	unsigned int total,
 	const std::string& url)
 {
-	/*
-	 * Since the ItemListFormAction is also used to display search results,
-	 * we always need to set the right title
-	 */
-	std::string title;
 	FmtStrFormatter fmt;
 
 	fmt.register_fmt('N', PROGRAM_NAME);
@@ -1081,15 +1076,9 @@ void ItemListFormAction::set_head(const std::string& s,
 	fmt.register_fmt('F', apply_filter ? matcher.get_expression() : "");
 
 	const unsigned int width = utils::to_u(f.get("title:w"));
-	if (!show_searchresult) {
-		title = fmt.do_format(
-				cfg->get_configvalue("articlelist-title-format"),
-				width);
-	} else {
-		title = fmt.do_format(
-				cfg->get_configvalue("searchresult-title-format"),
-				width);
-	}
+	const std::string title = fmt.do_format(
+			get_title_format(), // Different format between "search" and "regular" lists
+			width);
 	f.set("head", title);
 }
 

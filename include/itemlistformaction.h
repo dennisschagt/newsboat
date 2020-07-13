@@ -79,6 +79,8 @@ protected:
 		invalidation_mode = InvalidationMode::COMPLETE;
 	}
 
+	virtual std::string get_title_format() = 0;
+
 	bool show_searchresult;
 
 	unsigned int pos;
