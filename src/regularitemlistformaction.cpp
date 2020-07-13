@@ -11,7 +11,6 @@ RegularItemListFormAction::RegularItemListFormAction(View* vv,
 	RegexManager& r)
 	: ItemListFormAction(vv, formstr, cc, f, cfg, r)
 {
-	show_searchresult = false;
 }
 
 bool RegularItemListFormAction::process_operation(Operation op,

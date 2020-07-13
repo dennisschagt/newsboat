@@ -81,7 +81,6 @@ protected:
 	virtual void show_search_results(std::shared_ptr<RssFeed> results,
 		std::string phrase) = 0;
 
-	bool show_searchresult;
 	std::string search_phrase;
 
 	unsigned int pos;

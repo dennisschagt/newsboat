@@ -10,7 +10,6 @@ SearchItemListFormAction::SearchItemListFormAction(View* vv,
 	RegexManager& r)
 	: ItemListFormAction(vv, formstr, cc, f, cfg, r)
 {
-	show_searchresult = true;
 }
 
 bool SearchItemListFormAction::process_operation(Operation op,

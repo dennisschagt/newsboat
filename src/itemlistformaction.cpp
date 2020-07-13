@@ -29,7 +29,6 @@ ItemListFormAction::ItemListFormAction(View* vv,
 	ConfigContainer* cfg,
 	RegexManager& r)
 	: ListFormAction(vv, formstr, "items", cfg)
-	, show_searchresult(false)
 	, pos(0)
 	, apply_filter(false)
 	, set_filterpos(false)
@@ -69,9 +68,7 @@ bool ItemListFormAction::process_operation(Operation op,
 			// no need to mark item as read, the itemview already do
 			// that
 			old_itempos = itempos;
-			v->push_itemview(feed,
-				visible_items[itempos].first->guid(),
-				show_searchresult ? search_phrase : "");
+			v->push_itemview(feed, visible_items[itempos].first->guid(), search_phrase);
 			invalidate(itempos);
 		} else {
 			v->show_error(
