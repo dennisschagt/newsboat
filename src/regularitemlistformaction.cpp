@@ -50,4 +50,10 @@ std::string RegularItemListFormAction::title()
 	}
 }
 
+void RegularItemListFormAction::show_search_results(std::shared_ptr<RssFeed>
+	results, std::string phrase)
+{
+	v->push_searchresult(results, phrase);
+}
+
 } // namespace newsboat

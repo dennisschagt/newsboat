@@ -78,6 +78,8 @@ protected:
 	}
 
 	virtual std::string get_title_format() = 0;
+	virtual void show_search_results(std::shared_ptr<RssFeed> results,
+		std::string phrase) = 0;
 
 	bool show_searchresult;
 	std::string search_phrase;

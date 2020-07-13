@@ -27,6 +27,8 @@ private:
 		std::vector<std::string>* args = nullptr) override;
 
 	std::string get_title_format() override;
+	void show_search_results(std::shared_ptr<RssFeed> results,
+		std::string phrase) override;
 };
 
 } // namespace newsboat

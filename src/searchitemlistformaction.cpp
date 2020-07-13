@@ -38,4 +38,12 @@ std::string SearchItemListFormAction::title()
 	return strprintf::fmt(_("Search Result - '%s'"), search_phrase);
 }
 
+void SearchItemListFormAction::show_search_results(std::shared_ptr<RssFeed>
+	results, std::string phrase)
+{
+	// Effectively replaces this Search-view with a new Search-view
+	v->pop_current_formaction();
+	v->push_searchresult(results, phrase);
+}
+
 } // namespace newsboat

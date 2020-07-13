@@ -858,14 +858,11 @@ void ItemListFormAction::qna_start_search()
 		return;
 	}
 
-	std::shared_ptr<RssFeed> search_dummy_feed(new RssFeed(rsscache));
+	auto search_dummy_feed = std::make_shared<RssFeed>(rsscache);
 	search_dummy_feed->set_search_feed(true);
 	search_dummy_feed->add_items(items);
 
-	if (show_searchresult) {
-		v->pop_current_formaction();
-	}
-	v->push_searchresult(search_dummy_feed, searchphrase);
+	show_search_results(search_dummy_feed, searchphrase);
 }
 
 void ItemListFormAction::do_update_visible_items()
