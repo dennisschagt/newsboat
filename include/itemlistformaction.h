@@ -62,7 +62,7 @@ public:
 
 	void set_searchphrase(const std::string& s)
 	{
-		searchphrase = s;
+		search_phrase = s;
 	}
 
 	void recalculate_form() override;
@@ -80,7 +80,7 @@ protected:
 	virtual std::string get_title_format() = 0;
 
 	bool show_searchresult;
-	std::string searchphrase;
+	std::string search_phrase;
 
 	unsigned int pos;
 

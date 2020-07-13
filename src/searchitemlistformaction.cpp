@@ -35,7 +35,7 @@ std::string SearchItemListFormAction::get_title_format()
 
 std::string SearchItemListFormAction::title()
 {
-	return strprintf::fmt(_("Search Result - '%s'"), searchphrase);
+	return strprintf::fmt(_("Search Result - '%s'"), search_phrase);
 }
 
 } // namespace newsboat

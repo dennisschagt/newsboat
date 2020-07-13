@@ -71,7 +71,7 @@ bool ItemListFormAction::process_operation(Operation op,
 			old_itempos = itempos;
 			v->push_itemview(feed,
 				visible_items[itempos].first->guid(),
-				show_searchresult ? searchphrase : "");
+				show_searchresult ? search_phrase : "");
 			invalidate(itempos);
 		} else {
 			v->show_error(
@@ -832,7 +832,7 @@ void ItemListFormAction::qna_end_editflags()
 
 void ItemListFormAction::qna_start_search()
 {
-	searchphrase = qna_responses[0];
+	std::string searchphrase = qna_responses[0];
 	if (searchphrase.length() == 0) {
 		return;
 	}
