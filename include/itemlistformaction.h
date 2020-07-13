@@ -37,8 +37,6 @@ public:
 
 	void set_feed(std::shared_ptr<RssFeed> fd);
 
-	std::string title() override;
-
 	std::shared_ptr<RssFeed> get_feed()
 	{
 		return feed;
@@ -82,8 +80,11 @@ protected:
 	virtual std::string get_title_format() = 0;
 
 	bool show_searchresult;
+	std::string searchphrase;
 
 	unsigned int pos;
+
+	std::shared_ptr<RssFeed> feed;
 
 private:
 	void register_format_styles();
@@ -124,11 +125,9 @@ private:
 		const std::string& itemlist_format,
 		const std::string& datetime_format);
 
-	std::shared_ptr<RssFeed> feed;
 	bool apply_filter;
 	Matcher matcher;
 	std::vector<ItemPtrPosPair> visible_items;
-	std::string searchphrase;
 
 	History filterhistory;
 

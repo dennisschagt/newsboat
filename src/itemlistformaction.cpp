@@ -1362,24 +1362,6 @@ void ItemListFormAction::set_feed(std::shared_ptr<RssFeed> fd)
 	do_update_visible_items();
 }
 
-std::string ItemListFormAction::title()
-{
-	if (feed->rssurl() == "") {
-		return strprintf::fmt(_("Search Result - '%s'"), searchphrase);
-	} else {
-		if (feed->is_query_feed()) {
-			return strprintf::fmt(_("Query Feed - %s"),
-					feed->rssurl().substr(
-						6, feed->rssurl().length() - 6));
-		} else {
-			auto feedtitle = feed->title();
-			utils::remove_soft_hyphens(feedtitle);
-			return strprintf::fmt(
-					_("Article List - %s"), feedtitle);
-		}
-	}
-}
-
 void ItemListFormAction::handle_op_saveall()
 {
 	LOG(Level::INFO,

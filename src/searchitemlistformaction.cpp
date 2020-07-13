@@ -1,6 +1,7 @@
 #include "searchitemlistformaction.h"
 
 #include "config.h"
+#include "strprintf.h"
 
 namespace newsboat {
 
@@ -30,6 +31,11 @@ bool SearchItemListFormAction::process_operation(Operation op,
 std::string SearchItemListFormAction::get_title_format()
 {
 	return cfg->get_configvalue("searchresult-title-format");
+}
+
+std::string SearchItemListFormAction::title()
+{
+	return strprintf::fmt(_("Search Result - '%s'"), searchphrase);
 }
 
 } // namespace newsboat

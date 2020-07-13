@@ -19,6 +19,8 @@ public:
 		return "articlelist";
 	}
 
+	std::string title() override;
+
 private:
 	bool process_operation(Operation op,
 		bool automatic = false,
