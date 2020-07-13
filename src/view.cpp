@@ -406,9 +406,8 @@ void View::push_searchresult(std::shared_ptr<RssFeed> feed,
 	if (feed->total_item_count() > 0) {
 		std::shared_ptr<SearchItemListFormAction> searchresult(
 			new SearchItemListFormAction(
-				this, itemlist_str, rsscache, filters, cfg, rxman));
+				this, itemlist_str, rsscache, filters, cfg, rxman, phrase));
 		searchresult->set_feed(feed);
-		searchresult->set_searchphrase(phrase);
 		apply_colors(searchresult);
 		searchresult->set_parent_formaction(get_current_formaction());
 		searchresult->init();

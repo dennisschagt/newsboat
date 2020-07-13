@@ -49,6 +49,11 @@ std::string RegularItemListFormAction::title()
 	}
 }
 
+void RegularItemListFormAction::show_article(std::string guid)
+{
+	v->push_itemview(feed, guid);
+}
+
 void RegularItemListFormAction::show_search_results(std::shared_ptr<RssFeed>
 	results, std::string phrase)
 {

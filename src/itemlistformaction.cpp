@@ -68,7 +68,7 @@ bool ItemListFormAction::process_operation(Operation op,
 			// no need to mark item as read, the itemview already do
 			// that
 			old_itempos = itempos;
-			v->push_itemview(feed, visible_items[itempos].first->guid(), search_phrase);
+			show_article(visible_items[itempos].first->guid());
 			invalidate(itempos);
 		} else {
 			v->show_error(

@@ -58,7 +58,7 @@ TEST_CASE("SearchItemList: OP_OPEN displays article using an external pager",
 	c.set_view(&v);
 
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 	itemlist.set_feed(feed);
 
 	REQUIRE_NOTHROW(itemlist.process_op(OP_OPEN));
@@ -89,7 +89,7 @@ TEST_CASE("SearchItemList: OP_PURGE_DELETED purges previously deleted items",
 	c.set_view(&v);
 
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 	itemlist.set_feed(feed);
 
 	SECTION("No items to purge") {
@@ -133,7 +133,7 @@ TEST_CASE(
 	c.set_view(&v);
 
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 	itemlist.set_feed(feed);
 	itemlist.process_op(OP_OPENBROWSER_AND_MARK);
 	std::ifstream browserFileStream(browserfile.get_path());
@@ -171,7 +171,7 @@ TEST_CASE(
 	c.set_view(&v);
 
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 	itemlist.set_feed(feed);
 	itemlist.process_op(OP_OPENBROWSER_AND_MARK);
 
@@ -204,7 +204,7 @@ TEST_CASE("SearchItemList: OP_OPENINBROWSER passes the url to the browser",
 	c.set_view(&v);
 
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 	itemlist.set_feed(feed);
 	itemlist.process_op(OP_OPENINBROWSER);
 	std::ifstream browserFileStream(browserfile.get_path());
@@ -247,7 +247,7 @@ TEST_CASE("SearchItemList: OP_OPENALLUNREADINBROWSER passes the url list to the 
 	c.set_view(&v);
 
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 	itemlist.set_feed(feed);
 
 	SECTION("unread >= max-browser-tabs") {
@@ -332,7 +332,7 @@ TEST_CASE(
 	c.set_view(&v);
 
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 	itemlist.set_feed(feed);
 
 	SECTION("unread >= max-browser-tabs") {
@@ -418,7 +418,7 @@ TEST_CASE("SearchItemList: OP_SHOWURLS shows the article's properties",
 	item->set_description(test_description);
 	item->set_pubDate(test_pubDate);
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 
 	SECTION("with external-url-viewer") {
 		feed->add_item(item);
@@ -478,7 +478,7 @@ TEST_CASE("SearchItemList: OP_BOOKMARK pipes articles url and title to bookmark-
 	item->set_title(test_title);
 
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 
 	feed->add_item(item);
 	itemlist.set_feed(feed);
@@ -517,7 +517,7 @@ TEST_CASE("SearchItemList: OP_EDITFLAGS arguments are added to an item's flags",
 	std::shared_ptr<RssItem> item = std::make_shared<RssItem>(&rsscache);
 
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 
 	feed->add_item(item);
 	itemlist.set_feed(feed);
@@ -626,7 +626,7 @@ TEST_CASE("SearchItemList: OP_SAVE writes an article's attributes to the specifi
 	item->set_description(test_description);
 
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 
 	feed->add_item(item);
 	itemlist.set_feed(feed);
@@ -686,7 +686,7 @@ TEST_CASE("SearchItemList: OP_HARDQUIT command is processed",
 	std::shared_ptr<RssFeed> feed = std::make_shared<RssFeed>(&rsscache);
 
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 	itemlist.set_feed(feed);
 
 	REQUIRE_NOTHROW(itemlist.process_op(OP_HARDQUIT));
@@ -822,7 +822,7 @@ TEST_CASE("SearchItemList: OP_PIPE_TO pipes an article's content to an external 
 	item->set_description(test_description);
 
 	SearchItemListFormAction itemlist(&v, itemlist_str, &rsscache, filters, &cfg,
-		rxman);
+		rxman, "lorem ipsum");
 
 	feed->add_item(item);
 	itemlist.set_feed(feed);

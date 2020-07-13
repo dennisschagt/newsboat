@@ -60,11 +60,6 @@ public:
 
 	void finished_qna(Operation op) override;
 
-	void set_searchphrase(const std::string& s)
-	{
-		search_phrase = s;
-	}
-
 	void recalculate_form() override;
 
 protected:
@@ -78,10 +73,9 @@ protected:
 	}
 
 	virtual std::string get_title_format() = 0;
+	virtual void show_article(std::string guid) = 0;
 	virtual void show_search_results(std::shared_ptr<RssFeed> results,
 		std::string phrase) = 0;
-
-	std::string search_phrase;
 
 	unsigned int pos;
 

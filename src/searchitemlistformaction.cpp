@@ -7,8 +7,9 @@ namespace newsboat {
 
 SearchItemListFormAction::SearchItemListFormAction(View* vv,
 	std::string formstr, Cache* cc, FilterContainer& f, ConfigContainer* cfg,
-	RegexManager& r)
+	RegexManager& r, const std::string& searchphrase)
 	: ItemListFormAction(vv, formstr, cc, f, cfg, r)
+	, search_phrase(searchphrase)
 {
 }
 
@@ -35,6 +36,11 @@ std::string SearchItemListFormAction::get_title_format()
 std::string SearchItemListFormAction::title()
 {
 	return strprintf::fmt(_("Search Result - '%s'"), search_phrase);
+}
+
+void SearchItemListFormAction::show_article(std::string guid)
+{
+	v->push_itemview(feed, guid, search_phrase);
 }
 
 void SearchItemListFormAction::show_search_results(std::shared_ptr<RssFeed>

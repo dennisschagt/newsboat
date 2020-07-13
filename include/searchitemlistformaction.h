@@ -12,7 +12,8 @@ public:
 		Cache* cc,
 		FilterContainer& f,
 		ConfigContainer* cfg,
-		RegexManager& r);
+		RegexManager& r,
+		const std::string& searchphrase);
 
 	std::string id() const override
 	{
@@ -27,8 +28,11 @@ private:
 		std::vector<std::string>* args = nullptr) override;
 
 	std::string get_title_format() override;
+	void show_article(std::string guid) override;
 	void show_search_results(std::shared_ptr<RssFeed> results,
 		std::string phrase) override;
+
+	const std::string search_phrase;
 };
 
 } // namespace newsboat
