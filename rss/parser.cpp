@@ -144,6 +144,9 @@ Feed Parser::parse_url(const std::string& url,
 	if (to != 0) {
 		curl_easy_setopt(easyhandle, CURLOPT_TIMEOUT, to);
 	}
+	curl_easy_setopt(easyhandle, CURLOPT_TCP_KEEPALIVE, 1);
+	curl_easy_setopt(easyhandle, CURLOPT_TCP_KEEPIDLE, 10);
+	curl_easy_setopt(easyhandle, CURLOPT_TCP_KEEPINTVL, 10);
 
 	if (!prx.empty()) {
 		curl_easy_setopt(easyhandle, CURLOPT_PROXY, prx.c_str());
