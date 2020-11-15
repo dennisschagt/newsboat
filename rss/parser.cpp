@@ -148,6 +148,8 @@ Feed Parser::parse_url(const std::string& url,
 	curl_easy_setopt(easyhandle, CURLOPT_TCP_KEEPIDLE, 10);
 	curl_easy_setopt(easyhandle, CURLOPT_TCP_KEEPINTVL, 10);
 
+	custom_headers = curl_slist_append(custom_headers, "Connection: keep-alive");
+
 	if (!prx.empty()) {
 		curl_easy_setopt(easyhandle, CURLOPT_PROXY, prx.c_str());
 	}
