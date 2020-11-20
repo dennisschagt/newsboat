@@ -45,6 +45,8 @@ ItemViewFormAction::~ItemViewFormAction() {}
 
 void ItemViewFormAction::init()
 {
+	f.run(-3); // compute all widget dimensions
+
 	f.set("msg", "");
 	do_redraw = true;
 	links.clear();
@@ -90,12 +92,6 @@ void ItemViewFormAction::prepare()
 	 * HTML. The links extracted by the renderer are then appended, too.
 	 */
 	if (do_redraw) {
-		{
-			ScopeMeasure("itemview::prepare: rendering");
-			// XXX HACK: render once so that we get a proper widget width
-			f.run(-3);
-		}
-
 		update_head(item);
 
 		const unsigned int window_width = textview.get_width();
