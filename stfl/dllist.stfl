@@ -9,7 +9,7 @@ vbox
   @bind_end[bind_end]:
   @on_TAB:"TAB"
   label#info[title]
-    text[head]:"Queue"
+    text[head]:
     .expand:h
     .display[showtitle]:1
   !list[dls]
