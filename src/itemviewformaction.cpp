@@ -48,7 +48,7 @@ void ItemViewFormAction::init()
 	f.run(-3); // compute all widget dimensions
 
 	f.set("msg", "");
-	do_redraw = true;
+	item_changed = true;
 	links.clear();
 	num_lines = 0;
 	if (!cfg->get_configvalue_as_bool("display-article-progress")) {
@@ -91,7 +91,7 @@ void ItemViewFormAction::prepare()
 	 * flags and podcast download URL (enclosures) and then render the
 	 * HTML. The links extracted by the renderer are then appended, too.
 	 */
-	if (do_redraw) {
+	if (do_redraw || item_changed) {
 		update_head(item);
 
 		const unsigned int window_width = textview.get_width();
@@ -137,7 +137,9 @@ void ItemViewFormAction::prepare()
 		}
 
 		textview.stfl_replace_lines(num_lines, formatted_text);
-		f.set("article_offset", "0");
+		if (item_changed) {
+			textview.set_scroll_offset(0);
+		}
 
 		if (in_search) {
 			rxman.remove_last_regex("article");
@@ -145,6 +147,7 @@ void ItemViewFormAction::prepare()
 		}
 
 		do_redraw = false;
+		item_changed = false;
 	}
 }
 
@@ -196,7 +199,7 @@ bool ItemViewFormAction::process_operation(Operation op,
 	case OP_TOGGLESOURCEVIEW:
 		LOG(Level::INFO, "ItemViewFormAction::process_operation: toggling source view");
 		show_source = !show_source;
-		do_redraw = true;
+		item_changed = true;
 		break;
 	case OP_ENQUEUE: {
 		if (item->enclosure_url().length() > 0 &&
@@ -337,7 +340,7 @@ bool ItemViewFormAction::process_operation(Operation op,
 		LOG(Level::INFO,
 			"ItemViewFormAction::process_operation: jumping to next unread article");
 		if (v->get_next_unread(*itemlist, this)) {
-			do_redraw = true;
+			item_changed = true;
 		} else {
 			v->pop_current_formaction();
 			v->show_error(_("No unread items."));
@@ -348,7 +351,7 @@ bool ItemViewFormAction::process_operation(Operation op,
 			"ItemViewFormAction::process_operation: jumping to previous unread "
 			"article");
 		if (v->get_previous_unread(*itemlist, this)) {
-			do_redraw = true;
+			item_changed = true;
 		} else {
 			v->pop_current_formaction();
 			v->show_error(_("No unread items."));
@@ -358,7 +361,7 @@ bool ItemViewFormAction::process_operation(Operation op,
 		LOG(Level::INFO,
 			"ItemViewFormAction::process_operation: jumping to next article");
 		if (v->get_next(*itemlist, this)) {
-			do_redraw = true;
+			item_changed = true;
 		} else {
 			v->pop_current_formaction();
 			v->show_error(_("Already on last item."));
@@ -368,7 +371,7 @@ bool ItemViewFormAction::process_operation(Operation op,
 		LOG(Level::INFO,
 			"ItemViewFormAction::process_operation: jumping to previous article");
 		if (v->get_previous(*itemlist, this)) {
-			do_redraw = true;
+			item_changed = true;
 		} else {
 			v->pop_current_formaction();
 			v->show_error(_("Already on first item."));
@@ -378,7 +381,7 @@ bool ItemViewFormAction::process_operation(Operation op,
 		LOG(Level::INFO,
 			"ItemViewFormAction::process_operation: jumping to random unread article");
 		if (v->get_random_unread(*itemlist, this)) {
-			do_redraw = true;
+			item_changed = true;
 		} else {
 			v->pop_current_formaction();
 			v->show_error(_("No unread items."));
@@ -559,7 +562,7 @@ void ItemViewFormAction::finished_qna(Operation op)
 		item->set_flags(qna_responses[0]);
 		v->get_ctrl()->update_flags(item);
 		v->set_status(_("Flags updated."));
-		do_redraw = true;
+		item_changed = true;
 		break;
 	case OP_INT_START_SEARCH:
 		do_search();

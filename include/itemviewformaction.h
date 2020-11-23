@@ -70,6 +70,7 @@ private:
 
 	void do_search();
 
+	bool item_changed;
 	std::string guid;
 	std::shared_ptr<RssFeed> feed;
 	std::shared_ptr<RssItem> item;
