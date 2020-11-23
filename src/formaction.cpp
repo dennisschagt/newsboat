@@ -137,12 +137,7 @@ bool FormAction::process_op(Operation op,
 		}
 		break;
 	case OP_INT_CANCEL_QNA:
-		f.modify("lastline",
-			"replace",
-			"{hbox[lastline] .expand:0 {label[msglabel] .expand:h "
-			"text[msg]:\"\"}}");
-		v->inside_qna(false);
-		v->inside_cmdline(false);
+		stop_qna_mode();
 		break;
 	case OP_INT_QNA_NEXTHIST:
 		if (qna_history) {
@@ -376,14 +371,11 @@ void FormAction::start_qna(const std::vector<QnaPair>& prompts,
 	qna_responses.clear();
 	finish_operation = finish_op;
 	qna_history = h;
-	v->inside_qna(true);
 	start_next_question();
 }
 
 void FormAction::finished_qna(Operation op)
 {
-	v->inside_qna(false);
-	v->inside_cmdline(false);
 	switch (op) {
 	/*
 	 * since bookmarking is available in several formactions, I decided to
@@ -500,25 +492,7 @@ void FormAction::start_next_question()
 	 * If there is one more prompt to be presented to the user, set it up.
 	 */
 	if (qna_prompts.size() > 0) {
-		std::string replacestr(
-			"{hbox[lastline] .expand:0 {label .expand:0 text:");
-		replacestr.append(Stfl::quote(qna_prompts[0].first));
-		replacestr.append(
-			"}{input[qnainput] on_ESC:cancel-qna "
-			"on_UP:qna-prev-history on_DOWN:qna-next-history "
-			"on_ENTER:end-question modal:1 .expand:h @bind_home:** "
-			"@bind_end:** text[qna_value]:");
-		replacestr.append(Stfl::quote(qna_prompts[0].second));
-		replacestr.append(" pos[qna_value_pos]:0");
-		replacestr.append("}}");
-		f.modify("lastline", "replace", replacestr);
-		f.set_focus("qnainput");
-
-		// Set position to 0 and back to ensure that the text is visible
-		f.run(-1);
-		f.set("qna_value_pos",
-			std::to_string(qna_prompts[0].second.length()));
-
+		start_qna_mode(qna_prompts[0].first, qna_prompts[0].second);
 		qna_prompts.erase(qna_prompts.begin());
 	} else {
 		/*
@@ -526,12 +500,40 @@ void FormAction::start_next_question()
 		 * usual label, and signal the end of the "Q&A" to the
 		 * finished_qna() method.
 		 */
-		f.modify("lastline",
-			"replace",
-			"{hbox[lastline] .expand:0 {label[msglabel] .expand:h "
-			"text[msg]:\"\"}}");
+		stop_qna_mode();
 		this->finished_qna(finish_operation);
 	}
+}
+
+void FormAction::start_qna_mode(const std::string& prompt,
+	const std::string& value)
+{
+	if (focussed_widget.empty()) {
+		focussed_widget = f.get_focus();
+	}
+	f.set("show_status_line", "0");
+	f.set("show_qna_line", "1");
+	f.set("qna_prompt", prompt);
+	f.set("qna_value", value);
+	f.set_focus("qna_input");
+
+	// Set position to 0 and back to ensure that the text is visible
+	f.run(-1);
+	f.set("qna_value_pos", std::to_string(value.length()));
+
+	v->inside_qna(true);
+}
+
+void FormAction::stop_qna_mode()
+{
+	f.set("show_qna_line", "0");
+	f.set("show_status_line", "1");
+	if (focussed_widget.size() > 0) {
+		f.set_focus(focussed_widget);
+		focussed_widget.clear();
+	}
+	v->inside_qna(false);
+	v->inside_cmdline(false);
 }
 
 void FormAction::load_histories(const std::string& searchfile,

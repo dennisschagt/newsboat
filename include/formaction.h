@@ -114,7 +114,10 @@ protected:
 private:
 	std::string prepare_keymap_hint(KeyMapHintEntry* hints);
 	void start_next_question();
+	void start_qna_mode(const std::string& prompt, const std::string& value);
+	void stop_qna_mode();
 
+	std::string focussed_widget;
 	std::vector<QnaPair> qna_prompts;
 	Operation finish_operation;
 	History* qna_history;

@@ -37,6 +37,24 @@ vbox
       text[help]:"q:Abort"
   hbox[lastline]
     .expand:0
-    label[msglabel]
+    .display[show_status_line]:1
+    label
       text[msg]:""
       .expand:h
+  hbox[qna-line]
+    .expand:0
+    .display[show_qna_line]:0
+    label
+      text[qna_prompt]:
+      .expand:0
+    input[qna_input]
+      text[qna_value]:
+      on_ESC:cancel-qna
+      on_UP:qna-prev-history
+      on_DOWN:qna-next-history
+      on_ENTER:end-question
+      modal:1
+      .expand:h
+      @bind_home:**
+      @bind_end:**
+      pos[qna_value_pos]:0

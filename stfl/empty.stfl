@@ -5,6 +5,7 @@ vbox
     .display[showtitle]:1
   hbox[lastline]
     .expand:0
-    label[msglabel]
+    .display[show_status_line]:1
+    label
       text[msg]:""
       .expand:h
