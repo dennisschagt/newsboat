@@ -689,7 +689,28 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 	 * configuration is immediately handed to it.
 	 */
 	LOG(Level::DEBUG, "KeyMap::handle_action(%s, ...) called", action);
-	if (action == "bind-key") {
+	if (action == "bind") {
+		std::string remaining_params = params;
+		const auto key_sequence = utils::extract_token_quoted(remaining_params);
+		const auto context = utils::extract_token_quoted(remaining_params);
+		const auto parsed = parse_operation_sequence(remaining_params);
+		const auto operations = parsed.operations;
+		const auto description = parse_operation_description(parsed.leftovers);
+		if (context.has_value() && key_sequence.has_value()) {
+			std::cout << std::endl;
+			std::cout << std::endl;
+			std::cout << "bind context=" << context.value() << " keys=" <<
+				key_sequence.value() << " description=" << description << std::endl;
+			for (const auto& operation : operations) {
+				std::cout << "    " << getopname(operation.op);
+				for (const auto& arg : operation.args) {
+					std::cout << " " << arg;
+				}
+				std::cout << std::endl;
+			}
+			std::cout << std::endl;
+		}
+	} else if (action == "bind-key") {
 		const auto tokens = utils::tokenize_quoted(params);
 		if (tokens.size() < 2) {
 			throw ConfigHandlerException(ActionHandlerStatus::TOO_FEW_PARAMS);
