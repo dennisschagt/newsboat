@@ -170,6 +170,11 @@ struct MacroCmd {
 	std::vector<std::string> args;
 };
 
+struct ParsedOperations {
+	std::vector<MacroCmd> operations;
+	std::string leftovers;
+};
+
 class KeyMap : public ConfigActionHandler {
 public:
 	explicit KeyMap(unsigned int flags);
@@ -190,7 +195,7 @@ public:
 	void dump_config(std::vector<std::string>& config_output) const override;
 	std::vector<KeyMapDesc> get_keymap_descriptions(std::string context);
 
-	std::vector<MacroCmd> parse_operation_sequence(const std::string& line);
+	ParsedOperations parse_operation_sequence(const std::string& line);
 	std::vector<MacroCmd> get_startup_operation_sequence();
 
 private:
