@@ -1,10 +1,10 @@
 use nom::{
     branch::alt,
-    bytes::complete::{escaped_transform, is_not, tag, take},
-    character::complete::{space0, space1},
+    bytes::complete::{escaped_transform, is_not, tag, tag_no_case, take},
+    character::complete::{satisfy, space0, space1},
     combinator::{complete, eof, map, recognize, value, verify},
     multi::{many0, many1, separated_list0, separated_list1},
-    sequence::{delimited, preceded},
+    sequence::{delimited, preceded, terminated, tuple},
     IResult,
 };
 
@@ -68,6 +68,122 @@ fn operation_description(input: &str) -> IResult<&str, &str> {
     parser(input)
 }
 
+#[derive(Debug)]
+pub struct Key {
+    pub key: String,
+    pub shift: bool,
+    pub control: bool,
+    pub meta: bool,
+}
+
+impl Key {
+    fn regular_key(key: char) -> Key {
+        Key {
+            key: key.to_lowercase().to_string(),
+            shift: key.is_uppercase(),
+            control: false,
+            meta: false,
+        }
+    }
+
+    fn control_key(key: char) -> Key {
+        Key {
+            key: key.to_string(),
+            shift: false,
+            control: true,
+            meta: false,
+        }
+    }
+
+    fn named_key(key: String) -> Key {
+        Key {
+            key: key,
+            shift: false,
+            control: false,
+            meta: false,
+        }
+    }
+}
+
+fn single_key(input: &str) -> IResult<&str, char> {
+    let parser = satisfy(|c| c != '<' && c != '>' && c != '^');
+
+    parser(input)
+}
+
+fn regular_key(input: &str) -> IResult<&str, Key> {
+    let parser = single_key;
+    let mut parser = map(parser, |key| Key::regular_key(key));
+
+    parser(input)
+}
+
+fn control_key(input: &str) -> IResult<&str, Key> {
+    let parser = satisfy(|c| c.is_alphabetic());
+    let parser = preceded(tag("^"), parser);
+    let mut parser = map(parser, |key| Key::control_key(key));
+
+    parser(input)
+}
+
+fn named_key(input: &str) -> IResult<&str, String> {
+    let parser = alt((
+        tag_no_case("space"),
+        tag_no_case("enter"),
+        tag_no_case("up"),
+        tag_no_case("down"),
+        tag_no_case("left"),
+        tag_no_case("right"),
+        tag_no_case("esc"),
+        tag_no_case("plus"),
+        tag_no_case("minus"),
+        tag_no_case("lt"),
+        tag_no_case("gt"),
+    ));
+
+    let mut parser = map(parser, |key: &str| key.to_lowercase());
+
+    parser(input)
+}
+
+fn named_key_tag(input: &str) -> IResult<&str, Key> {
+    let parser = delimited(tag("<"), named_key, tag(">"));
+    let mut parser = map(parser, |key_name| Key::named_key(key_name));
+
+    parser(input)
+}
+
+/// Parses a key with modifiers in `<C-S-M-d>` format
+fn modifiers_key_tag(input: &str) -> IResult<&str, Key> {
+    let single_key = map(single_key, |c| c.to_string());
+
+    let parser = alt((tag("C"), tag("S"), tag("M")));
+    let parser = terminated(parser, tag("-"));
+    let parser = many1(parser);
+    let parser = tuple((parser, alt((single_key, named_key))));
+    let parser = delimited(tag("<"), parser, tag(">"));
+
+    let mut parser = map(parser, |(modifiers, key)| Key {
+        key,
+        shift: modifiers.contains(&"S"),
+        control: modifiers.contains(&"C"),
+        meta: modifiers.contains(&"M"),
+    });
+
+    parser(input)
+}
+
+fn key_sequence(input: &str) -> IResult<&str, Vec<Key>> {
+    let mut parser = many1(alt((
+        regular_key,
+        control_key,
+        named_key_tag,
+        modifiers_key_tag,
+    )));
+
+    parser(input)
+}
+
 /// Split a semicolon-separated list of operations into a vector. Each operation is represented by
 /// a non-empty sub-vector, where the first element is the name of the operation, and the rest of
 /// the elements are operation's arguments.
@@ -95,8 +211,16 @@ pub fn tokenize_operation_description(input: &str) -> Option<&str> {
     }
 }
 
+pub fn tokenize_key_sequence(input: &str) -> Option<Vec<Key>> {
+    match key_sequence(input) {
+        Ok((_leftovers, keys)) => Some(keys),
+        Err(_error) => None,
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use super::tokenize_key_sequence;
     use super::tokenize_operation_description;
     use super::tokenize_operation_sequence;
 
@@ -396,5 +520,34 @@ mod tests {
             tokenize_operation_description(r#"-- "description not closed "#),
             None
         );
+    }
+
+    #[test]
+    fn t_tokenize_key_sequence_requires_at_least_1_key() {
+        assert!(tokenize_key_sequence("").is_none());
+    }
+
+    #[test]
+    fn t_tokenize_key_sequence_parses_regular_keys() {
+        let x = tokenize_key_sequence("a").unwrap();
+        assert_eq!(x.len(), 1);
+        assert_eq!(x[0].key, "a");
+        assert_eq!(x[0].shift, false);
+        assert_eq!(x[0].control, false);
+        assert_eq!(x[0].meta, false);
+
+        let y = tokenize_key_sequence("A").unwrap();
+        assert_eq!(y.len(), 1);
+        assert_eq!(y[0].key, "a");
+        assert_eq!(y[0].shift, true);
+        assert_eq!(y[0].control, false);
+        assert_eq!(y[0].meta, false);
+
+        let z = tokenize_key_sequence("$").unwrap();
+        assert_eq!(z.len(), 1);
+        assert_eq!(z[0].key, "$");
+        assert_eq!(z[0].shift, false);
+        assert_eq!(z[0].control, false);
+        assert_eq!(z[0].meta, false);
     }
 }
