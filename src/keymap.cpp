@@ -523,6 +523,10 @@ KeyMap::KeyMap(unsigned flags)
 	keymap_["help"]["SPACE"] = OP_SK_PGDOWN;
 	keymap_["article"]["b"] = OP_SK_PGUP;
 	keymap_["article"]["SPACE"] = OP_SK_PGDOWN;
+
+	for (const auto& context : contexts) {
+		bindings_[context.first] = std::make_shared<KeyBinding>();
+	}
 }
 
 std::vector<KeyMapDesc> KeyMap::get_keymap_descriptions(std::string context)
@@ -712,7 +716,14 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 			std::cout << std::endl;
 		}
 		std::cout << std::endl;
-		register_binding(context.value(), key_sequence, operations, description);
+		if (!key_sequence.empty()) {
+			const auto key = key_sequence.back();
+			const auto key_prefix = std::vector<Key>(key_sequence.begin(),
+					std::prev(key_sequence.end()));
+			register_binding(context.value(), key_prefix, key, operations, description);
+		} else {
+			// TODO: Throw ConfigHandlerException?
+		}
 	} else if (action == "bind-key") {
 		const auto tokens = utils::tokenize_quoted(params);
 		if (tokens.size() < 2) {
@@ -887,14 +898,46 @@ unsigned short KeyMap::get_flag_from_context(const std::string& context)
 }
 
 void KeyMap::register_binding(const std::string& context,
-	std::vector<Key> key_sequence, std::vector<MacroCmd> operations,
+	std::vector<Key> key_prefix, Key key, std::vector<MacroCmd> operations,
 	const std::string description)
 {
-	// TODO: Implement
-	(void)context;
-	(void)key_sequence;
-	(void)operations;
-	(void)description;
+	auto context_root = bindings_[context];
+	if (context_root == nullptr) {
+		// TODO: Handle unknown context
+		return;
+	}
+
+	std::shared_ptr<KeyBinding> current = context_root;
+	for (const auto& key : key_prefix) {
+		std::shared_ptr<Binding> binding = current->bindings[key];
+		std::shared_ptr<KeyBinding> next = std::dynamic_pointer_cast<KeyBinding>
+			(binding);
+		if (next == nullptr) {
+			next = std::make_shared<KeyBinding>();
+			current->bindings[key] = next;
+		}
+		current = next;
+	}
+	auto operation_binding = std::make_shared<OperationsBinding>(operations,
+			description);
+	current->bindings[key] = operation_binding;
+}
+
+bool operator<(const Key& l, const Key& r)
+{
+	if (l.key >= r.key) {
+		return false;
+	}
+	if (l.shift >= r.shift) {
+		return false;
+	}
+	if (l.control >= r.control) {
+		return false;
+	}
+	if (l.meta >= r.meta) {
+		return false;
+	}
+	return true;
 }
 
 } // namespace newsboat

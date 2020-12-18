@@ -183,16 +183,22 @@ struct Key {
 	bool meta;
 };
 
+bool operator<(const Key& l, const Key& r);
+
 struct Binding {
+	virtual ~Binding() = default;
 };
 
-struct KeyBinding : Binding {
+struct KeyBinding : public Binding {
 	std::map<Key, std::shared_ptr<Binding>> bindings;
 };
 
-struct OperationsBinding : Binding {
+struct OperationsBinding : public Binding {
 	std::vector<MacroCmd> operations;
 	std::string description;
+
+	OperationsBinding(const std::vector<MacroCmd>& o,
+		const std::string& d) : operations(o), description(d) {};
 };
 
 class KeyMap : public ConfigActionHandler {
@@ -225,12 +231,13 @@ private:
 	unsigned short get_flag_from_context(const std::string& context);
 	std::map<std::string, Operation> get_internal_operations() const;
 	std::string getopname(Operation op) const;
-	void register_binding(const std::string& context, std::vector<Key> key_sequence,
+	void register_binding(const std::string& context, std::vector<Key> key_prefix,
+		Key key,
 		std::vector<MacroCmd> operations, const std::string description);
 
 	std::map<std::string, std::map<std::string, Operation>> keymap_;
 	std::map<std::string, std::vector<MacroCmd>> macros_;
-	std::map<std::string, std::shared_ptr<OperationsBinding>> bindings_;
+	std::map<std::string, std::shared_ptr<KeyBinding>> bindings_;
 	std::vector<MacroCmd> startup_operations_sequence;
 };
 
