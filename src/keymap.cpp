@@ -691,25 +691,28 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 	LOG(Level::DEBUG, "KeyMap::handle_action(%s, ...) called", action);
 	if (action == "bind") {
 		std::string remaining_params = params;
-		const auto key_sequence = utils::extract_token_quoted(remaining_params);
+		const auto key_sequence_text = utils::extract_token_quoted(remaining_params);
 		const auto context = utils::extract_token_quoted(remaining_params);
+		if (!key_sequence_text.has_value() || !context.has_value()) {
+			throw ConfigHandlerException(ActionHandlerStatus::TOO_FEW_PARAMS);
+		}
+		const auto key_sequence = parse_key_sequence(key_sequence_text.value());
 		const auto parsed = parse_operation_sequence(remaining_params);
 		const auto operations = parsed.operations;
 		const auto description = parse_operation_description(parsed.leftovers);
-		if (context.has_value() && key_sequence.has_value()) {
-			std::cout << std::endl;
-			std::cout << std::endl;
-			std::cout << "bind context=" << context.value() << " keys=" <<
-				key_sequence.value() << " description=" << description << std::endl;
-			for (const auto& operation : operations) {
-				std::cout << "    " << getopname(operation.op);
-				for (const auto& arg : operation.args) {
-					std::cout << " " << arg;
-				}
-				std::cout << std::endl;
+		std::cout << std::endl;
+		std::cout << std::endl;
+		std::cout << "bind context=" << context.value() << " keys=" <<
+			key_sequence_text.value() << " description=" << description << std::endl;
+		for (const auto& operation : operations) {
+			std::cout << "    " << getopname(operation.op);
+			for (const auto& arg : operation.args) {
+				std::cout << " " << arg;
 			}
 			std::cout << std::endl;
 		}
+		std::cout << std::endl;
+		register_binding(context.value(), key_sequence, operations, description);
 	} else if (action == "bind-key") {
 		const auto tokens = utils::tokenize_quoted(params);
 		if (tokens.size() < 2) {
@@ -881,6 +884,17 @@ unsigned short KeyMap::get_flag_from_context(const std::string& context)
 	}
 
 	return 0; // shouldn't happen
+}
+
+void KeyMap::register_binding(const std::string& context,
+	std::vector<Key> key_sequence, std::vector<MacroCmd> operations,
+	const std::string description)
+{
+	// TODO: Implement
+	(void)context;
+	(void)key_sequence;
+	(void)operations;
+	(void)description;
 }
 
 } // namespace newsboat

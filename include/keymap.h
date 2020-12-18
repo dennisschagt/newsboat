@@ -192,6 +192,7 @@ struct KeyBinding : Binding {
 
 struct OperationsBinding : Binding {
 	std::vector<MacroCmd> operations;
+	std::string description;
 };
 
 class KeyMap : public ConfigActionHandler {
@@ -224,8 +225,12 @@ private:
 	unsigned short get_flag_from_context(const std::string& context);
 	std::map<std::string, Operation> get_internal_operations() const;
 	std::string getopname(Operation op) const;
+	void register_binding(const std::string& context, std::vector<Key> key_sequence,
+		std::vector<MacroCmd> operations, const std::string description);
+
 	std::map<std::string, std::map<std::string, Operation>> keymap_;
 	std::map<std::string, std::vector<MacroCmd>> macros_;
+	std::map<std::string, std::shared_ptr<OperationsBinding>> bindings_;
 	std::vector<MacroCmd> startup_operations_sequence;
 };
 
