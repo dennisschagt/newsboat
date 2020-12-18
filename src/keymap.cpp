@@ -696,8 +696,8 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 	if (action == "bind") {
 		std::string remaining_params = params;
 		const auto key_sequence_text = utils::extract_token_quoted(remaining_params);
-		const auto context = utils::extract_token_quoted(remaining_params);
-		if (!key_sequence_text.has_value() || !context.has_value()) {
+		const auto contexts_text = utils::extract_token_quoted(remaining_params);
+		if (!key_sequence_text.has_value() || !contexts_text.has_value()) {
 			throw ConfigHandlerException(ActionHandlerStatus::TOO_FEW_PARAMS);
 		}
 		const auto key_sequence = parse_key_sequence(key_sequence_text.value());
@@ -705,6 +705,14 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 			throw ConfigHandlerException(strprintf::fmt(
 					_("`%s' is not a valid key sequence"),
 					key_sequence_text.value()));
+		}
+		const auto specified_contexts = utils::tokenize(contexts_text.value(), ",");
+		for (const auto& context : specified_contexts) {
+			if (!is_valid_context(context) && context != "everywhere") {
+				throw ConfigHandlerException(strprintf::fmt(
+						_("`%s' is not a valid context"),
+						context));
+			}
 		}
 		const auto key = key_sequence.back();
 		const auto key_prefix = std::vector<Key>(key_sequence.begin(),
@@ -714,7 +722,8 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 		const auto description = parse_operation_description(parsed.leftovers);
 		std::cout << std::endl;
 		std::cout << std::endl;
-		std::cout << "bind context=" << context.value() << " keys=" <<
+		std::cout << "bind context=" << utils::join(specified_contexts,
+				"+") << " keys=" <<
 			key_sequence_text.value() << " description=" << description << std::endl;
 		for (const auto& operation : operations) {
 			std::cout << "    " << getopname(operation.op);
@@ -724,7 +733,20 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 			std::cout << std::endl;
 		}
 		std::cout << std::endl;
-		register_binding(context.value(), key_prefix, key, operations, description);
+
+		const auto register_in_context = [&](const std::string& ctx) {
+			this->register_binding(ctx, key_prefix, key, operations, description);
+		};
+
+		for (const auto& context : specified_contexts) {
+			if (context == "everywhere" || context == "all") {
+				for (const auto& ctx : contexts) {
+					register_in_context(ctx.first);
+				}
+			} else {
+				register_in_context(context);
+			}
+		}
 	} else if (action == "bind-key") {
 		const auto tokens = utils::tokenize_quoted(params);
 		if (tokens.size() < 2) {
