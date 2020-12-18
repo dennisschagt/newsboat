@@ -810,6 +810,21 @@ std::string KeyMap::parse_operation_description(const std::string& input)
 	return std::string(description);
 }
 
+std::vector<Key> KeyMap::parse_key_sequence(const std::string& input)
+{
+	const auto key_sequence_rs = keymap::bridged::tokenize_key_sequence(input);
+	std::vector<Key> key_sequence;
+	for (const auto& key_rs : key_sequence_rs) {
+		Key k;
+		k.key = std::string(keymap::bridged::get_key(key_rs));
+		k.shift = keymap::bridged::get_shift(key_rs);
+		k.control = keymap::bridged::get_control(key_rs);
+		k.meta = keymap::bridged::get_meta(key_rs);
+		key_sequence.push_back(k);
+	}
+	return key_sequence;
+}
+
 std::vector<MacroCmd> KeyMap::get_startup_operation_sequence()
 {
 	return startup_operations_sequence;

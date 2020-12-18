@@ -175,6 +175,13 @@ struct ParsedOperations {
 	std::string leftovers;
 };
 
+struct Key {
+	std::string key;
+	bool shift;
+	bool control;
+	bool meta;
+};
+
 class KeyMap : public ConfigActionHandler {
 public:
 	explicit KeyMap(unsigned int flags);
@@ -197,6 +204,7 @@ public:
 
 	ParsedOperations parse_operation_sequence(const std::string& line);
 	std::string parse_operation_description(const std::string& input);
+	std::vector<Key> parse_key_sequence(const std::string& input);
 	std::vector<MacroCmd> get_startup_operation_sequence();
 
 private:
