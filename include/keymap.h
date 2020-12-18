@@ -2,6 +2,7 @@
 #define NEWSBOAT_KEYMAP_H_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -170,6 +171,36 @@ struct MacroCmd {
 	std::vector<std::string> args;
 };
 
+struct ParsedOperations {
+	std::vector<MacroCmd> operations;
+	std::string leftovers;
+};
+
+struct Key {
+	std::string key;
+	bool shift;
+	bool control;
+	bool meta;
+};
+
+bool operator<(const Key& l, const Key& r);
+
+struct Binding {
+	virtual ~Binding() = default;
+};
+
+struct KeyBinding : public Binding {
+	std::map<Key, std::shared_ptr<Binding>> bindings;
+};
+
+struct OperationsBinding : public Binding {
+	std::vector<MacroCmd> operations;
+	std::string description;
+
+	OperationsBinding(const std::vector<MacroCmd>& o,
+		const std::string& d) : operations(o), description(d) {};
+};
+
 class KeyMap : public ConfigActionHandler {
 public:
 	explicit KeyMap(unsigned int flags);
@@ -190,7 +221,9 @@ public:
 	void dump_config(std::vector<std::string>& config_output) const override;
 	std::vector<KeyMapDesc> get_keymap_descriptions(std::string context);
 
-	std::vector<MacroCmd> parse_operation_sequence(const std::string& line);
+	ParsedOperations parse_operation_sequence(const std::string& line);
+	std::string parse_operation_description(const std::string& input);
+	std::vector<Key> parse_key_sequence(const std::string& input);
 	std::vector<MacroCmd> get_startup_operation_sequence();
 
 private:
@@ -198,8 +231,13 @@ private:
 	unsigned short get_flag_from_context(const std::string& context);
 	std::map<std::string, Operation> get_internal_operations() const;
 	std::string getopname(Operation op) const;
+	void register_binding(const std::string& context, std::vector<Key> key_prefix,
+		Key key,
+		std::vector<MacroCmd> operations, const std::string description);
+
 	std::map<std::string, std::map<std::string, Operation>> keymap_;
 	std::map<std::string, std::vector<MacroCmd>> macros_;
+	std::map<std::string, std::shared_ptr<KeyBinding>> bindings_;
 	std::vector<MacroCmd> startup_operations_sequence;
 };
 

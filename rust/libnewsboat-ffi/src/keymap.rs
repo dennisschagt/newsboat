@@ -15,8 +15,17 @@ mod ffi {
         // This is not very elegant, but doing the same by hand using `extern "C"` is prohibitively
         // complex.
         type Operation;
-        fn tokenize_operation_sequence(input: &str) -> Vec<Operation>;
+        fn tokenize_operation_sequence(input: &str, leftovers: &mut String) -> Vec<Operation>;
         fn operation_tokens(operation: &Operation) -> &Vec<String>;
+
+        fn tokenize_operation_description(input: &str) -> String;
+
+        type Key;
+        fn tokenize_key_sequence(input: &str) -> Vec<Key>;
+        fn get_key(key: &Key) -> String;
+        fn get_shift(key: &Key) -> bool;
+        fn get_control(key: &Key) -> bool;
+        fn get_meta(key: &Key) -> bool;
     }
 
     extern "C++" {
@@ -33,16 +42,63 @@ struct Operation {
     tokens: Vec<String>,
 }
 
-fn tokenize_operation_sequence(input: &str) -> Vec<Operation> {
+struct Key {
+    key: String,
+    shift: bool,
+    control: bool,
+    meta: bool,
+}
+
+fn tokenize_operation_sequence(input: &str, leftovers: &mut String) -> Vec<Operation> {
     match libnewsboat::keymap::tokenize_operation_sequence(input) {
-        Some(operations) => operations
-            .into_iter()
-            .map(|tokens| Operation { tokens })
-            .collect::<Vec<_>>(),
+        Some((operations, remainder)) => {
+            *leftovers = remainder.to_string();
+            operations
+                .into_iter()
+                .map(|tokens| Operation { tokens })
+                .collect::<Vec<_>>()
+        }
         None => vec![],
     }
 }
 
 fn operation_tokens(input: &Operation) -> &Vec<String> {
     &input.tokens
+}
+
+fn tokenize_operation_description(input: &str) -> String {
+    match libnewsboat::keymap::tokenize_operation_description(input) {
+        Some(description) => String::from(description),
+        None => String::new(),
+    }
+}
+
+fn tokenize_key_sequence(input: &str) -> Vec<Key> {
+    match libnewsboat::keymap::tokenize_key_sequence(input) {
+        Some(key_sequence) => key_sequence
+            .into_iter()
+            .map(|k| Key {
+                key: k.key,
+                shift: k.shift,
+                control: k.control,
+                meta: k.meta,
+            })
+            .collect(),
+        None => vec![],
+    }
+}
+
+fn get_key(key: &Key) -> String {
+    key.key.to_owned()
+}
+fn get_shift(key: &Key) -> bool {
+    key.shift
+}
+
+fn get_control(key: &Key) -> bool {
+    key.control
+}
+
+fn get_meta(key: &Key) -> bool {
+    key.meta
 }

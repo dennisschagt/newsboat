@@ -523,6 +523,10 @@ KeyMap::KeyMap(unsigned flags)
 	keymap_["help"]["SPACE"] = OP_SK_PGDOWN;
 	keymap_["article"]["b"] = OP_SK_PGUP;
 	keymap_["article"]["SPACE"] = OP_SK_PGDOWN;
+
+	for (const auto& context : contexts) {
+		bindings_[context.first] = std::make_shared<KeyBinding>();
+	}
 }
 
 std::vector<KeyMapDesc> KeyMap::get_keymap_descriptions(std::string context)
@@ -689,7 +693,61 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 	 * configuration is immediately handed to it.
 	 */
 	LOG(Level::DEBUG, "KeyMap::handle_action(%s, ...) called", action);
-	if (action == "bind-key") {
+	if (action == "bind") {
+		std::string remaining_params = params;
+		const auto key_sequence_text = utils::extract_token_quoted(remaining_params);
+		const auto contexts_text = utils::extract_token_quoted(remaining_params);
+		if (!key_sequence_text.has_value() || !contexts_text.has_value()) {
+			throw ConfigHandlerException(ActionHandlerStatus::TOO_FEW_PARAMS);
+		}
+		const auto key_sequence = parse_key_sequence(key_sequence_text.value());
+		if (key_sequence.empty()) {
+			throw ConfigHandlerException(strprintf::fmt(
+					_("`%s' is not a valid key sequence"),
+					key_sequence_text.value()));
+		}
+		const auto specified_contexts = utils::tokenize(contexts_text.value(), ",");
+		for (const auto& context : specified_contexts) {
+			if (!is_valid_context(context) && context != "everywhere") {
+				throw ConfigHandlerException(strprintf::fmt(
+						_("`%s' is not a valid context"),
+						context));
+			}
+		}
+		const auto key = key_sequence.back();
+		const auto key_prefix = std::vector<Key>(key_sequence.begin(),
+				std::prev(key_sequence.end()));
+		const auto parsed = parse_operation_sequence(remaining_params);
+		const auto operations = parsed.operations;
+		const auto description = parse_operation_description(parsed.leftovers);
+		std::cout << std::endl;
+		std::cout << std::endl;
+		std::cout << "bind context=" << utils::join(specified_contexts,
+				"+") << " keys=" <<
+			key_sequence_text.value() << " description=" << description << std::endl;
+		for (const auto& operation : operations) {
+			std::cout << "    " << getopname(operation.op);
+			for (const auto& arg : operation.args) {
+				std::cout << " " << arg;
+			}
+			std::cout << std::endl;
+		}
+		std::cout << std::endl;
+
+		const auto register_in_context = [&](const std::string& ctx) {
+			this->register_binding(ctx, key_prefix, key, operations, description);
+		};
+
+		for (const auto& context : specified_contexts) {
+			if (context == "everywhere" || context == "all") {
+				for (const auto& ctx : contexts) {
+					register_in_context(ctx.first);
+				}
+			} else {
+				register_in_context(context);
+			}
+		}
+	} else if (action == "bind-key") {
 		const auto tokens = utils::tokenize_quoted(params);
 		if (tokens.size() < 2) {
 			throw ConfigHandlerException(ActionHandlerStatus::TOO_FEW_PARAMS);
@@ -728,11 +786,13 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 	} else if (action == "macro") {
 		std::string remaining_params = params;
 		const auto token = utils::extract_token_quoted(remaining_params);
-		// The token and operation sequence are delimited by one or more
-		// spaces. We have to strip them, or `parse_operation_sequence()` will
-		// include them into the first operation.
-		utils::trim(remaining_params);
-		const std::vector<MacroCmd> cmds = parse_operation_sequence(remaining_params);
+		const auto parsed = parse_operation_sequence(remaining_params);
+		const std::vector<MacroCmd> cmds = parsed.operations;
+		remaining_params = parsed.leftovers;
+		if (!remaining_params.empty()) {
+			LOG(Level::DEBUG,
+				"KeyMap::handle_action(macro): ignored remainder:  \"%s\"", remaining_params);
+		}
 		if (!token.has_value() || cmds.empty()) {
 			throw ConfigHandlerException(ActionHandlerStatus::TOO_FEW_PARAMS);
 		}
@@ -740,16 +800,18 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 
 		macros_[macrokey] = cmds;
 	} else if (action == "run-on-startup") {
-		startup_operations_sequence = parse_operation_sequence(params);
+		startup_operations_sequence = parse_operation_sequence(params).operations;
 	} else {
 		throw ConfigHandlerException(ActionHandlerStatus::INVALID_PARAMS);
 	}
 }
 
 
-std::vector<MacroCmd> KeyMap::parse_operation_sequence(const std::string& line)
+ParsedOperations KeyMap::parse_operation_sequence(const std::string& line)
 {
-	const auto operations = keymap::bridged::tokenize_operation_sequence(line);
+	rust::String leftovers;
+	const auto operations = keymap::bridged::tokenize_operation_sequence(line,
+			leftovers);
 
 	std::vector<MacroCmd> cmds;
 	for (const auto& operation : operations) {
@@ -773,7 +835,31 @@ std::vector<MacroCmd> KeyMap::parse_operation_sequence(const std::string& line)
 		cmds.push_back(cmd);
 	}
 
-	return cmds;
+	return ParsedOperations{
+		.operations = cmds,
+		.leftovers = std::string(leftovers)
+	};
+}
+
+std::string KeyMap::parse_operation_description(const std::string& input)
+{
+	const auto description = keymap::bridged::tokenize_operation_description(input);
+	return std::string(description);
+}
+
+std::vector<Key> KeyMap::parse_key_sequence(const std::string& input)
+{
+	const auto key_sequence_rs = keymap::bridged::tokenize_key_sequence(input);
+	std::vector<Key> key_sequence;
+	for (const auto& key_rs : key_sequence_rs) {
+		Key k;
+		k.key = std::string(keymap::bridged::get_key(key_rs));
+		k.shift = keymap::bridged::get_shift(key_rs);
+		k.control = keymap::bridged::get_control(key_rs);
+		k.meta = keymap::bridged::get_meta(key_rs);
+		key_sequence.push_back(k);
+	}
+	return key_sequence;
 }
 
 std::vector<MacroCmd> KeyMap::get_startup_operation_sequence()
@@ -832,6 +918,50 @@ unsigned short KeyMap::get_flag_from_context(const std::string& context)
 	}
 
 	return 0; // shouldn't happen
+}
+
+void KeyMap::register_binding(const std::string& context,
+	std::vector<Key> key_prefix, Key key, std::vector<MacroCmd> operations,
+	const std::string description)
+{
+	auto context_root = bindings_[context];
+	if (context_root == nullptr) {
+		// TODO: Handle unknown context
+		std::cout << "Unknown context: " << context << std::endl;
+		return;
+	}
+
+	std::shared_ptr<KeyBinding> current = context_root;
+	for (const auto& key : key_prefix) {
+		std::shared_ptr<Binding> binding = current->bindings[key];
+		std::shared_ptr<KeyBinding> next = std::dynamic_pointer_cast<KeyBinding>
+			(binding);
+		if (next == nullptr) {
+			next = std::make_shared<KeyBinding>();
+			current->bindings[key] = next;
+		}
+		current = next;
+	}
+	auto operation_binding = std::make_shared<OperationsBinding>(operations,
+			description);
+	current->bindings[key] = operation_binding;
+}
+
+bool operator<(const Key& l, const Key& r)
+{
+	if (l.key >= r.key) {
+		return false;
+	}
+	if (l.shift >= r.shift) {
+		return false;
+	}
+	if (l.control >= r.control) {
+		return false;
+	}
+	if (l.meta >= r.meta) {
+		return false;
+	}
+	return true;
 }
 
 } // namespace newsboat
