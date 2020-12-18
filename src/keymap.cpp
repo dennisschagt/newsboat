@@ -701,6 +701,14 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 			throw ConfigHandlerException(ActionHandlerStatus::TOO_FEW_PARAMS);
 		}
 		const auto key_sequence = parse_key_sequence(key_sequence_text.value());
+		if (key_sequence.empty()) {
+			throw ConfigHandlerException(strprintf::fmt(
+					_("`%s' is not a valid key sequence"),
+					key_sequence_text.value()));
+		}
+		const auto key = key_sequence.back();
+		const auto key_prefix = std::vector<Key>(key_sequence.begin(),
+				std::prev(key_sequence.end()));
 		const auto parsed = parse_operation_sequence(remaining_params);
 		const auto operations = parsed.operations;
 		const auto description = parse_operation_description(parsed.leftovers);
@@ -716,14 +724,7 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 			std::cout << std::endl;
 		}
 		std::cout << std::endl;
-		if (!key_sequence.empty()) {
-			const auto key = key_sequence.back();
-			const auto key_prefix = std::vector<Key>(key_sequence.begin(),
-					std::prev(key_sequence.end()));
-			register_binding(context.value(), key_prefix, key, operations, description);
-		} else {
-			// TODO: Throw ConfigHandlerException?
-		}
+		register_binding(context.value(), key_prefix, key, operations, description);
 	} else if (action == "bind-key") {
 		const auto tokens = utils::tokenize_quoted(params);
 		if (tokens.size() < 2) {
@@ -904,6 +905,7 @@ void KeyMap::register_binding(const std::string& context,
 	auto context_root = bindings_[context];
 	if (context_root == nullptr) {
 		// TODO: Handle unknown context
+		std::cout << "Unknown context: " << context << std::endl;
 		return;
 	}
 
