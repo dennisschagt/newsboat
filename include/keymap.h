@@ -2,6 +2,7 @@
 #define NEWSBOAT_KEYMAP_H_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -180,6 +181,17 @@ struct Key {
 	bool shift;
 	bool control;
 	bool meta;
+};
+
+struct Binding {
+};
+
+struct KeyBinding : Binding {
+	std::map<Key, std::shared_ptr<Binding>> bindings;
+};
+
+struct OperationsBinding : Binding {
+	std::vector<MacroCmd> operations;
 };
 
 class KeyMap : public ConfigActionHandler {
