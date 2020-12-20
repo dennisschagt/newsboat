@@ -887,28 +887,6 @@ test/htmlrenderer.o: test/htmlrenderer.cpp include/htmlrenderer.h \
  include/utils.h 3rd-party/expected.hpp 3rd-party/optional.hpp \
  include/configcontainer.h include/logger.h config.h include/strprintf.h \
  target/cxxbridge/libnewsboat-ffi/src/utils.rs.h
-test/itemlistformaction.o: test/itemlistformaction.cpp \
- include/itemlistformaction.h 3rd-party/optional.hpp include/history.h \
- include/listformaction.h include/formaction.h include/keymap.h \
- include/configactionhandler.h include/stflpp.h include/listwidget.h \
- include/listformatter.h include/regexmanager.h include/matcher.h \
- filter/FilterParser.h include/regexowner.h include/view.h \
- include/colormanager.h include/configcontainer.h include/controller.h \
- include/cache.h include/configparser.h include/feedcontainer.h \
- include/filtercontainer.h include/fslock.h \
- target/cxxbridge/libnewsboat-ffi/src/fslock.rs.h include/opml.h \
- include/fileurlreader.h include/urlreader.h include/queuemanager.h \
- include/reloader.h include/remoteapi.h include/rssignores.h \
- include/rssitem.h include/matchable.h include/dirbrowserformaction.h \
- include/feedlistformaction.h include/filebrowserformaction.h \
- include/htmlrenderer.h include/textformatter.h 3rd-party/catch.hpp \
- include/cache.h include/configpaths.h include/cliargsparser.h \
- include/logger.h config.h include/strprintf.h \
- include/feedlistformaction.h stfl/itemlist.h include/keymap.h \
- include/regexmanager.h include/rssfeed.h include/utils.h \
- 3rd-party/expected.hpp target/cxxbridge/libnewsboat-ffi/src/utils.rs.h \
- test/test-helpers/misc.h test/test-helpers/tempfile.h \
- test/test-helpers/maintempdir.h
 test/itemrenderer.o: test/itemrenderer.cpp include/itemrenderer.h \
  include/htmlrenderer.h include/textformatter.h include/regexmanager.h \
  include/configactionhandler.h include/matcher.h filter/FilterParser.h \
@@ -958,6 +936,29 @@ test/regexmanager.o: test/regexmanager.cpp include/regexmanager.h \
  3rd-party/optional.hpp
 test/regexowner.o: test/regexowner.cpp include/regexowner.h \
  3rd-party/catch.hpp
+test/regularitemlistformaction.o: test/regularitemlistformaction.cpp \
+ include/itemlistformaction.h 3rd-party/optional.hpp include/history.h \
+ include/listformaction.h include/formaction.h include/keymap.h \
+ include/configactionhandler.h include/stflpp.h include/listwidget.h \
+ include/listformatter.h include/regexmanager.h include/matcher.h \
+ filter/FilterParser.h include/regexowner.h include/view.h \
+ include/colormanager.h include/configcontainer.h include/controller.h \
+ include/cache.h include/configparser.h include/feedcontainer.h \
+ include/filtercontainer.h include/fslock.h \
+ target/cxxbridge/libnewsboat-ffi/src/fslock.rs.h include/opml.h \
+ include/fileurlreader.h include/urlreader.h include/queuemanager.h \
+ include/reloader.h include/remoteapi.h include/rssignores.h \
+ include/rssitem.h include/matchable.h include/dirbrowserformaction.h \
+ include/feedlistformaction.h include/filebrowserformaction.h \
+ include/htmlrenderer.h include/textformatter.h 3rd-party/catch.hpp \
+ include/cache.h include/configpaths.h include/cliargsparser.h \
+ include/logger.h config.h include/strprintf.h \
+ include/feedlistformaction.h stfl/itemlist.h include/keymap.h \
+ include/regexmanager.h include/regularitemlistformaction.h \
+ include/itemlistformaction.h include/rssfeed.h include/utils.h \
+ 3rd-party/expected.hpp target/cxxbridge/libnewsboat-ffi/src/utils.rs.h \
+ test/test-helpers/misc.h test/test-helpers/tempfile.h \
+ test/test-helpers/maintempdir.h
 test/remoteapi.o: test/remoteapi.cpp include/remoteapi.h \
  include/configcontainer.h include/configactionhandler.h \
  3rd-party/catch.hpp include/configparser.h
@@ -995,6 +996,29 @@ test/scopemeasure.o: test/scopemeasure.cpp include/scopemeasure.h \
  target/cxxbridge/libnewsboat-ffi/src/scopemeasure.rs.h \
  3rd-party/catch.hpp include/logger.h config.h include/strprintf.h \
  test/test-helpers/loggerresetter.h test/test-helpers/tempfile.h \
+ test/test-helpers/maintempdir.h
+test/searchresultsformaction.o: test/searchresultsformaction.cpp \
+ include/itemlistformaction.h 3rd-party/optional.hpp include/history.h \
+ include/listformaction.h include/formaction.h include/keymap.h \
+ include/configactionhandler.h include/stflpp.h include/listwidget.h \
+ include/listformatter.h include/regexmanager.h include/matcher.h \
+ filter/FilterParser.h include/regexowner.h include/view.h \
+ include/colormanager.h include/configcontainer.h include/controller.h \
+ include/cache.h include/configparser.h include/feedcontainer.h \
+ include/filtercontainer.h include/fslock.h \
+ target/cxxbridge/libnewsboat-ffi/src/fslock.rs.h include/opml.h \
+ include/fileurlreader.h include/urlreader.h include/queuemanager.h \
+ include/reloader.h include/remoteapi.h include/rssignores.h \
+ include/rssitem.h include/matchable.h include/dirbrowserformaction.h \
+ include/feedlistformaction.h include/filebrowserformaction.h \
+ include/htmlrenderer.h include/textformatter.h 3rd-party/catch.hpp \
+ include/cache.h include/configpaths.h include/cliargsparser.h \
+ include/logger.h config.h include/strprintf.h \
+ include/feedlistformaction.h stfl/itemlist.h include/keymap.h \
+ include/regexmanager.h include/rssfeed.h include/utils.h \
+ 3rd-party/expected.hpp target/cxxbridge/libnewsboat-ffi/src/utils.rs.h \
+ include/searchresultsformaction.h include/itemlistformaction.h \
+ test/test-helpers/misc.h test/test-helpers/tempfile.h \
  test/test-helpers/maintempdir.h
 test/strprintf.o: test/strprintf.cpp include/strprintf.h \
  3rd-party/catch.hpp
