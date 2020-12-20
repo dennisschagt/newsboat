@@ -13,6 +13,11 @@ public:
 		FilterContainer& f,
 		ConfigContainer* cfg,
 		RegexManager& r);
+
+	std::string id() const override
+	{
+		return "articlelist";
+	}
 };
 
 } // namespace newsboat

@@ -31,10 +31,6 @@ public:
 
 	void set_feed(std::shared_ptr<RssFeed> fd);
 
-	std::string id() const override
-	{
-		return "articlelist";
-	}
 	std::string title() override;
 
 	std::shared_ptr<RssFeed> get_feed()
