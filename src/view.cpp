@@ -45,8 +45,10 @@ extern "C" {
 #include "logger.h"
 #include "matcherexception.h"
 #include "regexmanager.h"
+#include "regularitemlistformaction.h"
 #include "reloadthread.h"
 #include "rssfeed.h"
+#include "searchresultsformaction.h"
 #include "selectformaction.h"
 #include "selecttag.h"
 #include "strprintf.h"
@@ -424,7 +426,7 @@ void View::push_searchresult(std::shared_ptr<RssFeed> feed,
 	LOG(Level::DEBUG, "View::push_searchresult: pushing search result");
 
 	if (feed->total_item_count() > 0) {
-		auto searchresult = std::make_shared<ItemListFormAction>(
+		auto searchresult = std::make_shared<SearchResultsFormAction>(
 				this, itemlist_str, rsscache, filters, cfg, rxman);
 		searchresult->set_feed(feed);
 		searchresult->set_show_searchresult(true);
@@ -449,7 +451,7 @@ std::shared_ptr<ItemListFormAction> View::push_itemlist(
 	prepare_query_feed(feed);
 
 	if (feed->total_item_count() > 0) {
-		auto itemlist = std::make_shared<ItemListFormAction>(
+		auto itemlist = std::make_shared<RegularItemListFormAction>(
 				this, itemlist_str, rsscache, filters, cfg, rxman);
 		itemlist->set_feed(feed);
 		itemlist->set_show_searchresult(false);
@@ -666,8 +668,8 @@ void View::notify_itemlist_change(std::shared_ptr<RssFeed> feed)
 {
 	for (const auto& form : formaction_stack) {
 		if (form != nullptr && form->id() == "articlelist") {
-			std::shared_ptr<ItemListFormAction> itemlist =
-				std::dynamic_pointer_cast<ItemListFormAction,
+			std::shared_ptr<RegularItemListFormAction> itemlist =
+				std::dynamic_pointer_cast<RegularItemListFormAction,
 				FormAction>(form);
 			if (itemlist != nullptr) {
 				std::shared_ptr<RssFeed> f =
