@@ -31,7 +31,6 @@ ItemListFormAction::ItemListFormAction(View* vv,
 	: ListFormAction(vv, formstr, "items", cfg)
 	, pos(0)
 	, apply_filter(false)
-	, show_searchresult(false)
 	, set_filterpos(false)
 	, filterpos(0)
 	, rxman(r)
@@ -63,22 +62,6 @@ bool ItemListFormAction::process_operation(Operation op,
 	const unsigned int itempos = list.get_position();
 
 	switch (op) {
-	case OP_OPEN: {
-		LOG(Level::INFO, "ItemListFormAction: opening item at pos `%u'", itempos);
-		if (!visible_items.empty()) {
-			// no need to mark item as read, the itemview already do
-			// that
-			old_itempos = itempos;
-			v->push_itemview(feed,
-				visible_items[itempos].first->guid(),
-				show_searchresult ? search_phrase : "");
-			invalidate(itempos);
-		} else {
-			v->show_error(
-				_("No item selected!")); // should not happen
-		}
-	}
-	break;
 	case OP_DELETE: {
 		ScopeMeasure m1("OP_DELETE");
 		if (!visible_items.empty()) {
@@ -383,17 +366,6 @@ bool ItemListFormAction::process_operation(Operation op,
 		break;
 	case OP_HELP:
 		v->push_help();
-		break;
-	case OP_RELOAD:
-		if (!show_searchresult) {
-			LOG(Level::INFO,
-				"ItemListFormAction: reloading current feed");
-			v->get_ctrl()->get_reloader()->reload(pos);
-			invalidate_list();
-		} else {
-			v->show_error(
-				_("Error: you can't reload search results."));
-		}
 		break;
 	case OP_QUIT:
 		LOG(Level::INFO, "ItemListFormAction: quitting");
@@ -756,6 +728,23 @@ bool ItemListFormAction::process_operation(Operation op,
 	return true;
 }
 
+bool ItemListFormAction::open_item(unsigned int itempos,
+	const std::string& search_phrase)
+{
+	LOG(Level::INFO, "ItemListFormAction: opening item at pos `%u'", itempos);
+	if (!visible_items.empty()) {
+		// no need to mark item as read, the itemview already do
+		// that
+		old_itempos = itempos;
+		v->push_itemview(feed, visible_items[itempos].first->guid(), search_phrase);
+		invalidate(itempos);
+		return true;
+	} else {
+		v->show_error(_("No item selected!")); // should not happen
+		return false;
+	}
+}
+
 bool ItemListFormAction::open_item_in_browser(
 	const std::shared_ptr<RssItem>& item) const
 {
@@ -887,7 +876,7 @@ void ItemListFormAction::qna_start_search()
 	search_dummy_feed->set_search_feed(true);
 	search_dummy_feed->add_items(items);
 
-	if (show_searchresult) {
+	if (this_is_search_result()) {
 		v->pop_current_formaction();
 	}
 	v->push_searchresult(search_dummy_feed, searchphrase);
@@ -1125,7 +1114,6 @@ void ItemListFormAction::set_head(const std::string& s,
 	 * Since the ItemListFormAction is also used to display search results,
 	 * we always need to set the right title
 	 */
-	std::string title;
 	FmtStrFormatter fmt;
 
 	fmt.register_fmt('N', PROGRAM_NAME);
@@ -1143,15 +1131,7 @@ void ItemListFormAction::set_head(const std::string& s,
 	fmt.register_fmt('F', apply_filter ? matcher.get_expression() : "");
 
 	const unsigned int width = utils::to_u(f.get("title:w"));
-	if (!show_searchresult) {
-		title = fmt.do_format(
-				cfg->get_configvalue("articlelist-title-format"),
-				width);
-	} else {
-		title = fmt.do_format(
-				cfg->get_configvalue("searchresult-title-format"),
-				width);
-	}
+	const std::string title = fmt.do_format(get_title_format(), width);
 	f.set("head", title);
 }
 
@@ -1439,24 +1419,6 @@ void ItemListFormAction::set_feed(std::shared_ptr<RssFeed> fd)
 	feed->load();
 	invalidate_list();
 	do_update_visible_items();
-}
-
-std::string ItemListFormAction::title()
-{
-	if (feed->rssurl() == "") {
-		return strprintf::fmt(_("Search Result - '%s'"), search_phrase);
-	} else {
-		if (feed->is_query_feed()) {
-			return strprintf::fmt(_("Query Feed - %s"),
-					feed->rssurl().substr(
-						6, feed->rssurl().length() - 6));
-		} else {
-			auto feedtitle = feed->title();
-			utils::remove_soft_hyphens(feedtitle);
-			return strprintf::fmt(
-					_("Article List - %s"), feedtitle);
-		}
-	}
 }
 
 void ItemListFormAction::handle_op_saveall()

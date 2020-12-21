@@ -18,6 +18,19 @@ public:
 	{
 		return "articlelist";
 	}
+
+	std::string title() override;
+
+	bool process_operation(Operation op, bool automatic,
+		std::vector<std::string>* args) override;
+
+	bool this_is_search_result() override
+	{
+		return false;
+	}
+
+private:
+	std::string get_title_format() override;
 };
 
 } // namespace newsboat

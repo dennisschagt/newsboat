@@ -31,8 +31,6 @@ public:
 
 	void set_feed(std::shared_ptr<RssFeed> fd);
 
-	std::string title() override;
-
 	std::shared_ptr<RssFeed> get_feed()
 	{
 		return feed;
@@ -54,15 +52,6 @@ public:
 
 	void finished_qna(Operation op) override;
 
-	void set_show_searchresult(bool b)
-	{
-		show_searchresult = b;
-	}
-	void set_searchphrase(const std::string& s)
-	{
-		search_phrase = s;
-	}
-
 	void invalidate_list()
 	{
 		invalidation_mode = InvalidationMode::COMPLETE;
@@ -70,15 +59,21 @@ public:
 
 	void restore_selected_position();
 
+protected:
+	bool process_operation(Operation op,
+		bool automatic = false,
+		std::vector<std::string>* args = nullptr) override;
+	bool open_item(unsigned int itempos, const std::string& search_phrase = "");
+	virtual bool this_is_search_result() = 0;
+
+	std::shared_ptr<RssFeed> feed;
+	unsigned int pos;
+
 private:
 	void register_format_styles();
 
 	void do_update_visible_items();
 	void draw_items();
-
-	bool process_operation(Operation op,
-		bool automatic = false,
-		std::vector<std::string>* args = nullptr) override;
 
 	bool open_item_in_browser(const std::shared_ptr<RssItem>& item) const;
 
@@ -86,6 +81,7 @@ private:
 		unsigned int unread,
 		unsigned int total,
 		const std::string& url);
+	virtual std::string get_title_format() = 0;
 	int get_pos(unsigned int idx);
 
 	void save_article(const std::string& filename,
@@ -120,13 +116,9 @@ private:
 
 	void goto_item(const std::string& title);
 
-	unsigned int pos;
-	std::shared_ptr<RssFeed> feed;
 	bool apply_filter;
 	Matcher matcher;
 	std::vector<ItemPtrPosPair> visible_items;
-	bool show_searchresult;
-	std::string search_phrase;
 
 	History filterhistory;
 
