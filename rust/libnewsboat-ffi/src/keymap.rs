@@ -44,7 +44,7 @@ fn tokenize_operation_sequence(
     allow_description: bool,
     parsing_failed: &mut bool,
 ) -> Vec<Operation> {
-    match libnewsboat::keymap::tokenize_operation_sequence(input, allow_description) {
+    match libnewsboat::keymap::parsing::tokenize_operation_sequence(input, allow_description) {
         Some((operations, opt_description)) => {
             *parsing_failed = false;
             *description = opt_description.unwrap_or_default();
