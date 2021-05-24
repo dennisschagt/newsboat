@@ -705,13 +705,13 @@ void ItemViewFormAction::do_search()
 
 void ItemViewFormAction::highlight_text(const std::string& searchphrase)
 {
-	std::vector<std::string> params;
-	params.push_back("article");
-	params.push_back(searchphrase);
+	std::string params = "article";
+	params += " " + searchphrase;
 
-	std::vector<std::string> colors = utils::tokenize(
-			cfg->get_configvalue("search-highlight-colors"), " ");
-	std::copy(colors.begin(), colors.end(), std::back_inserter(params));
+	std::vector<std::string> colors = utils::tokenize(cfg->get_configvalue("search-highlight-colors"), " ");
+	for (const auto& color : colors) {
+		params += " " + color;
+	}
 
 	try {
 		rxman.handle_action("highlight", params);

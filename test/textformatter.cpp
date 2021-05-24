@@ -96,8 +96,7 @@ TEST_CASE("regex manager is used by format_text_to_list if one is passed",
 	RegexManager rxmgr;
 	// the choice of green text on red background does not reflect my
 	// personal taste (or lack thereof) :)
-	rxmgr.handle_action(
-		"highlight", {"article", "please", "green", "default"});
+	rxmgr.handle_action("highlight", "article please green default");
 
 	const std::string expected_text =
 		"{list"
