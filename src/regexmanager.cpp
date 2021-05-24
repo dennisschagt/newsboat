@@ -48,6 +48,13 @@ void RegexManager::handle_action(const std::string& action,
 	cheat_store_for_dump_config.push_back(line);
 }
 
+void RegexManager::handle_action(const std::string& action,
+	const std::string& params)
+{
+	const std::vector<std::string> tokens = utils::tokenize_quoted(params);
+	handle_action(action, tokens);
+}
+
 int RegexManager::article_matches(Matchable* item)
 {
 	for (const auto& Matcher : matchers_article) {
