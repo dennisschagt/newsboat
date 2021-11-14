@@ -28,6 +28,7 @@ FileBrowserFormAction::FileBrowserFormAction(View* vv,
 	std::string formstr,
 	ConfigContainer* cfg)
 	: FormAction(vv, formstr, cfg)
+	, rs_filebrowser(filebrowser::bridged::create(utils::getcwd()))
 	, quit(false)
 	, files_list("files", FormAction::f, cfg->get_configvalue_as_int("scrolloff"))
 {

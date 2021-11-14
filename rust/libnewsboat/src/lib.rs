@@ -11,6 +11,7 @@ pub mod utils;
 
 pub mod cliargsparser;
 pub mod configpaths;
+pub mod filebrowser;
 pub mod filterparser;
 pub mod fmtstrformatter;
 pub mod fslock;

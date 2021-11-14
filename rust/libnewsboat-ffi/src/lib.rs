@@ -12,6 +12,7 @@ use std::process::abort;
 
 pub mod cliargsparser;
 pub mod configpaths;
+pub mod filebrowser;
 pub mod fmtstrformatter;
 pub mod fslock;
 pub mod history;

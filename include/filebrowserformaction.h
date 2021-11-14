@@ -1,6 +1,8 @@
 #ifndef NEWSBOAT_FILEBROWSERFORMACTION_H_
 #define NEWSBOAT_FILEBROWSERFORMACTION_H_
 
+#include "libnewsboat-ffi/src/filebrowser.rs.h"
+
 #include <sys/stat.h>
 #include <grp.h>
 
@@ -32,6 +34,8 @@ public:
 	std::string title() override;
 
 private:
+	rust::Box<filebrowser::bridged::FileBrowser> rs_filebrowser;
+
 	bool process_operation(Operation op,
 		bool automatic = false,
 		std::vector<std::string>* args = nullptr) override;

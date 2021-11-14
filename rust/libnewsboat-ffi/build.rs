@@ -13,6 +13,7 @@ fn main() {
     add_cxxbridge("cliargsparser");
     add_cxxbridge("configpaths");
     add_cxxbridge("fmtstrformatter");
+    add_cxxbridge("filebrowser");
     add_cxxbridge("fslock");
     add_cxxbridge("history");
     add_cxxbridge("keymap");
