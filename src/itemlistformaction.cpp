@@ -6,6 +6,7 @@
 #include <langinfo.h>
 #include <sstream>
 #include <string>
+#include <string.h>
 #include <sys/stat.h>
 
 #include "config.h"
