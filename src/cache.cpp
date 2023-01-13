@@ -173,7 +173,7 @@ static int rssitem_callback(void* myfeed, int argc, char** argv,
 {
 	std::shared_ptr<RssFeed>* feed =
 		static_cast<std::shared_ptr<RssFeed>*>(myfeed);
-	assert(argc == 13);
+	assert(argc == 10);
 	std::shared_ptr<RssItem> item(new RssItem(nullptr));
 	item->set_guid(argv[0]);
 	item->set_title(argv[1]);
@@ -190,13 +190,11 @@ static int rssitem_callback(void* myfeed, int argc, char** argv,
 
 	item->set_feedurl(argv[7]);
 
-	item->set_enclosure_url(argv[8] ? argv[8] : "");
-	item->set_enclosure_type(argv[9] ? argv[9] : "");
-	item->set_enqueued((std::string("1") == (argv[10] ? argv[10] : "")));
-	item->set_flags(argv[11] ? argv[11] : "");
-	item->set_base(argv[12] ? argv[12] : "");
+	item->set_flags(argv[8] ? argv[8] : "");
+	item->set_base(argv[9] ? argv[9] : "");
 
-	//(*feed)->items().push_back(item);
+	// TODO: Load enclosures (or push back to actual place where it is used)
+
 	(*feed)->add_item(item);
 	return 0;
 }
@@ -223,7 +221,7 @@ static int search_item_callback(void* myfeed,
 {
 	std::vector<std::shared_ptr<RssItem>>* items =
 			static_cast<std::vector<std::shared_ptr<RssItem>>*>(myfeed);
-	assert(argc == 13);
+	assert(argc == 10);
 	std::shared_ptr<RssItem> item(new RssItem(nullptr));
 	item->set_guid(argv[0]);
 	item->set_title(argv[1]);
@@ -239,11 +237,10 @@ static int search_item_callback(void* myfeed,
 	item->set_unread((std::string("1") == argv[6]));
 	item->set_feedurl(argv[7]);
 
-	item->set_enclosure_url(argv[8] ? argv[8] : "");
-	item->set_enclosure_type(argv[9] ? argv[9] : "");
-	item->set_enqueued((std::string("1") == argv[10]));
-	item->set_flags(argv[11] ? argv[11] : "");
-	item->set_base(argv[12] ? argv[12] : "");
+	item->set_flags(argv[8] ? argv[8] : "");
+	item->set_base(argv[9] ? argv[9] : "");
+
+	// TODO: Load enclosures (or push back to actual place where it is used)
 
 	items->push_back(item);
 	return 0;
@@ -271,8 +268,8 @@ Cache::Cache(const std::string& cachefile, ConfigContainer* c)
 		throw DbException(db);
 	}
 
-	populate_tables();
 	set_pragmas();
+	populate_tables();
 
 	clean_old_articles();
 
@@ -294,6 +291,9 @@ void Cache::set_pragmas()
 	// then we disable case-sensitive matching for the LIKE operator in
 	// SQLite, for search operations
 	run_sql("PRAGMA case_sensitive_like=OFF;");
+
+	// Make sure foreign key constraints are enforced
+	run_sql("PRAGMA foreign_keys = ON;");
 }
 
 static const schema_patches schemaPatches{
@@ -388,7 +388,30 @@ static const schema_patches schemaPatches{
 
 			"ALTER TABLE rss_item ADD COLUMN content_mime_type VARCHAR(255) NOT NULL DEFAULT \"\";"
 		}
-	}
+	},
+	{	{2, 31},
+		{
+			"UPDATE metadata SET db_schema_version_major = 2, db_schema_version_minor = 31;",
+
+			"CREATE TABLE attachments ( "
+			" id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+			" rss_item_id INTEGER NOT NULL, "
+			" url VARCHAR(1024) NOT NULL, "
+			" type VARCHAR(1024) NOT NULL, "
+			" enqueued INTEGER(1) NOT NULL DEFAULT 0, "
+			" description VARCHAR(1024) NOT NULL DEFAULT '', "
+			" FOREIGN KEY(rss_item_id) "
+			" REFERENCES rss_item(id) "
+			" ON DELETE CASCADE "
+			" );",
+
+			" INSERT INTO attachments (rss_item_id, url, type, enqueued) SELECT id, enclosure_url, enclosure_type, enqueued FROM rss_item WHERE enclosure_url IS NOT NULL AND enclosure_url != ''; ",
+
+			" ALTER TABLE rss_item DROP COLUMN enclosure_url; ",
+			" ALTER TABLE rss_item DROP COLUMN enclosure_type; ",
+			" ALTER TABLE rss_item DROP COLUMN enqueued; ",
+		}
+	},
 
 	// Note: schema changes should use the version number of the release that introduced them.
 };
@@ -595,8 +618,7 @@ std::shared_ptr<RssFeed> Cache::internalize_rssfeed(std::string rssurl,
 	/* ...and then the associated items */
 	query = prepare_query(
 			"SELECT guid, title, author, url, pubDate, length(content), "
-			"unread, "
-			"feedurl, enclosure_url, enclosure_type, enqueued, flags, base "
+			"unread, feedurl, flags, base "
 			"FROM rss_item "
 			"WHERE feedurl = '%q' "
 			"AND deleted = 0 "
@@ -669,8 +691,8 @@ std::vector<std::shared_ptr<RssItem>> Cache::search_for_items(
 		query = prepare_query(
 				"SELECT guid, title, author, url, pubDate, "
 				"length(content), "
-				"unread, feedurl, enclosure_url, enclosure_type, "
-				"enqueued, flags, base "
+				"unread, feedurl, "
+				"flags, base "
 				"FROM rss_item "
 				"WHERE (title LIKE '%%%q%%' OR content LIKE '%%%q%%') "
 				"AND feedurl = '%q' "
@@ -683,8 +705,8 @@ std::vector<std::shared_ptr<RssItem>> Cache::search_for_items(
 		query = prepare_query(
 				"SELECT guid, title, author, url, pubDate, "
 				"length(content), "
-				"unread, feedurl, enclosure_url, enclosure_type, "
-				"enqueued, flags, base "
+				"unread, feedurl, "
+				"flags, base "
 				"FROM rss_item "
 				"WHERE (title LIKE '%%%q%%' OR content LIKE '%%%q%%') "
 				"AND deleted = 0 "
@@ -870,8 +892,8 @@ void Cache::update_rssitem_unlocked(std::shared_ptr<RssItem> item,
 					"UPDATE rss_item "
 					"SET title = '%q', author = '%q', url = '%q', "
 					"feedurl = '%q', "
-					"content = '%q', content_mime_type = '%q', enclosure_url = '%q', "
-					"enclosure_type = '%q', base = '%q', unread = "
+					"content = '%q', content_mime_type = '%q', "
+					"base = '%q', unread = "
 					"'%d' "
 					"WHERE guid = '%q'",
 					item->title(),
@@ -880,18 +902,17 @@ void Cache::update_rssitem_unlocked(std::shared_ptr<RssItem> item,
 					feedurl,
 					description.text,
 					description.mime,
-					item->enclosure_url(),
-					item->enclosure_type(),
 					item->get_base(),
 					(item->unread() ? 1 : 0),
 					item->guid());
+			// TODO: Update enclosures?
 		} else {
 			update = prepare_query(
 					"UPDATE rss_item "
 					"SET title = '%q', author = '%q', url = '%q', "
 					"feedurl = '%q', "
-					"content = '%q', content_mime_type = '%q', enclosure_url = '%q', "
-					"enclosure_type = '%q', base = '%q' "
+					"content = '%q', content_mime_type = '%q', "
+					"base = '%q' "
 					"WHERE guid = '%q'",
 					item->title(),
 					item->author(),
@@ -899,22 +920,19 @@ void Cache::update_rssitem_unlocked(std::shared_ptr<RssItem> item,
 					feedurl,
 					description.text,
 					description.mime,
-					item->enclosure_url(),
-					item->enclosure_type(),
 					item->get_base(),
 					item->guid());
+			// TODO: Update enclosures?
 		}
 		run_sql(update);
 	} else {
 		std::string insert = prepare_query(
 				"INSERT INTO rss_item (guid, title, author, url, "
 				"feedurl, "
-				"pubDate, content, content_mime_type, unread, enclosure_url, "
-				"enclosure_type, enqueued, base) "
+				"pubDate, content, content_mime_type, unread, "
+				"base) "
 				"VALUES "
-				"('%q','%q','%q','%q','%q','%u','%q','%q','%d','%q','%q',%d,"
-				" "
-				"'%q')",
+				"('%q','%q','%q','%q','%q','%u','%q','%q','%d', '%q')",
 				item->guid(),
 				item->title(),
 				item->author(),
@@ -924,11 +942,11 @@ void Cache::update_rssitem_unlocked(std::shared_ptr<RssItem> item,
 				description.text,
 				description.mime,
 				(item->unread() ? 1 : 0),
-				item->enclosure_url(),
-				item->enclosure_type(),
-				item->enqueued() ? 1 : 0,
 				item->get_base());
+		// TODO: Update enclosures?
 		run_sql(insert);
+
+		// TODO: Update enqueued state of item?
 	}
 }
 
@@ -978,12 +996,13 @@ void Cache::update_rssitem_unread_and_enqueued(RssItem* item,
 
 	const auto query = prepare_query(
 			"UPDATE rss_item "
-			"SET unread = '%d', enqueued = '%d' "
+			"SET unread = '%d' "
 			"WHERE guid = '%q'",
 			item->unread() ? 1 : 0,
-			item->enqueued() ? 1 : 0,
 			item->guid());
 	run_sql(query);
+
+	// TODO: Update enqueued state of item?
 }
 
 /* this function updates the unread and enqueued flags */
