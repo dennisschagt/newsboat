@@ -127,14 +127,9 @@ std::string RssItem::pubDate() const
 	return utils::mt_strf_localtime(_("%a, %d %b %Y %T %z"), pubDate_);
 }
 
-void RssItem::set_enclosure_url(const std::string& url)
+void RssItem::add_enclosure(ItemEnclosure&& enclosure)
 {
-	enclosure_url_ = url;
-}
-
-void RssItem::set_enclosure_type(const std::string& type)
-{
-	enclosure_type_ = type;
+	enclosures_.push_back(std::move(enclosure));
 }
 
 nonstd::optional<std::string> RssItem::attribute_value(const std::string&

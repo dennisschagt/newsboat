@@ -91,7 +91,11 @@ TEST_CASE("item_renderer::to_plain_text() produces a rendered representation "
 
 	SECTION("Item with an enclosure") {
 		item->set_description(ITEM_DESCRIPTON, "text/html");
-		item->set_enclosure_url(ITEM_ENCLOSURE_URL);
+		item->add_enclosure({
+			ITEM_ENCLOSURE_URL,
+			"",
+			"",
+		});
 
 		const auto result = item_renderer::to_plain_text(cfg, item);
 
@@ -111,8 +115,11 @@ TEST_CASE("item_renderer::to_plain_text() produces a rendered representation "
 
 	SECTION("Item with an enclosure that has a MIME type") {
 		item->set_description(ITEM_DESCRIPTON, "text/html");
-		item->set_enclosure_url(ITEM_ENCLOSURE_URL);
-		item->set_enclosure_type(ITEM_ENCLOSURE_TYPE);
+		item->add_enclosure({
+			ITEM_ENCLOSURE_URL,
+			ITEM_ENCLOSURE_TYPE,
+			"",
+		});
 
 		const auto result = item_renderer::to_plain_text(cfg, item);
 

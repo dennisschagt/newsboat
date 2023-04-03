@@ -4,6 +4,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <vector>
 
 #include "matchable.h"
 #include "matcher.h"
@@ -16,6 +17,12 @@ class RssFeed;
 struct Description {
 	std::string text;
 	std::string mime;
+};
+
+struct ItemEnclosure {
+	std::string url;
+	std::string type;
+	std::string description;
 };
 
 class RssItem : public Matchable {
@@ -99,17 +106,18 @@ public:
 		return feedurl_;
 	}
 
-	const std::string& enclosure_url() const
+	const std::string enclosure_url() const
 	{
-		return enclosure_url_;
+		// TODO: Get data from list of enclosures
+		return "";
 	}
-	const std::string& enclosure_type() const
+	const std::string enclosure_type() const
 	{
-		return enclosure_type_;
+		// TODO: Get data from list of enclosures
+		return "";
 	}
 
-	void set_enclosure_url(const std::string& url);
-	void set_enclosure_type(const std::string& type);
+	void add_enclosure(ItemEnclosure&& enclosure);
 
 	bool enqueued()
 	{
@@ -187,8 +195,7 @@ private:
 	std::string guid_;
 	std::string feedurl_;
 	Cache* ch;
-	std::string enclosure_url_;
-	std::string enclosure_type_;
+	std::vector<ItemEnclosure> enclosures_;
 	std::string flags_;
 	std::string oldflags_;
 	std::weak_ptr<RssFeed> feedptr_;

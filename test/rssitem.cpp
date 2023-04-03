@@ -159,7 +159,11 @@ TEST_CASE("RssItem contains a number of matchable attributes", "[RssItem]")
 		const auto attr = "enclosure_url";
 
 		const auto url = "https://example.com/podcast-ep-01.mp3";
-		item.set_enclosure_url(url);
+		item.add_enclosure({
+			url,
+			"",
+			"",
+		});
 
 		REQUIRE(item.attribute_value(attr) == url);
 	}
@@ -168,7 +172,11 @@ TEST_CASE("RssItem contains a number of matchable attributes", "[RssItem]")
 		const auto attr = "enclosure_type";
 
 		const auto type = "audio/ogg";
-		item.set_enclosure_type(type);
+		item.add_enclosure({
+			"",
+			type,
+			"",
+		});
 
 		REQUIRE(item.attribute_value(attr) == type);
 	}

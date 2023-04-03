@@ -445,7 +445,7 @@ void RssParser::fill_feed_items(std::shared_ptr<RssFeed> feed)
 
 		x->set_base(item.base);
 
-		set_item_enclosure(x, item);
+		set_item_enclosures(x, item);
 
 		LOG(Level::DEBUG,
 			"RssParser::parse: item title = `%s' link = `%s' "
@@ -571,32 +571,23 @@ std::string RssParser::get_guid(const rsspp::Item& item) const
 	}
 }
 
-void RssParser::set_item_enclosure(std::shared_ptr<RssItem> x,
+void RssParser::set_item_enclosures(std::shared_ptr<RssItem> x,
 	const rsspp::Item& item)
 {
-	std::string enclosure_url;
-	std::string enclosure_type;
-	bool found_valid_enclosure = false;
-
 	for (const auto& enclosure : item.enclosures) {
-		if (utils::is_valid_podcast_type(enclosure.type)) {
-			found_valid_enclosure = true;
-			enclosure_url = enclosure.url;
-			enclosure_type = enclosure.type;
-		} else if (!found_valid_enclosure) {
-			enclosure_url = enclosure.url;
-			enclosure_type = enclosure.type;
-		}
-	}
+		LOG(Level::DEBUG,
+			"RssParser::parse: found enclosure_url: %s",
+			enclosure.url);
+		LOG(Level::DEBUG,
+			"RssParser::parse: found enclosure_type: %s",
+			enclosure.type);
 
-	x->set_enclosure_url(enclosure_url);
-	x->set_enclosure_type(enclosure_type);
-	LOG(Level::DEBUG,
-		"RssParser::parse: found enclosure_url: %s",
-		enclosure_url);
-	LOG(Level::DEBUG,
-		"RssParser::parse: found enclosure_type: %s",
-		enclosure_type);
+		x->add_enclosure({
+			.url = enclosure.url,
+			.type = enclosure.type,
+			.description = "",
+		});
+	}
 }
 
 void RssParser::add_item_to_feed(std::shared_ptr<RssFeed> feed,

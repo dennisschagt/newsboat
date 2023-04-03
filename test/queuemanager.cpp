@@ -23,8 +23,11 @@ SCENARIO("Smoke test for QueueManager", "[QueueManager]")
 
 		auto item = std::make_shared<RssItem>(&cache);
 		const std::string enclosure_url("https://example.com/podcast.mp3");
-		item->set_enclosure_url(enclosure_url);
-		item->set_enclosure_type("audio/mpeg");
+		item->add_enclosure({
+			enclosure_url,
+			"audio/mpeg",
+			""
+		});
 
 		auto feed = std::make_shared<RssFeed>(&cache, "https://example.com/news.atom");
 
@@ -88,13 +91,19 @@ SCENARIO("Smoke test for QueueManager", "[QueueManager]")
 			const auto result = manager.enqueue_url(item, feed);
 
 			auto item2 = std::make_shared<RssItem>(&cache);
-			item2->set_enclosure_url("https://www.example.com/another.mp3");
-			item2->set_enclosure_type("audio/mpeg");
+			item2->add_enclosure({
+				"https://www.example.com/another.mp3",
+				"audio/mpeg",
+				"",
+			});
 			const auto result2 = manager.enqueue_url(item2, feed);
 
 			auto item3 = std::make_shared<RssItem>(&cache);
-			item3->set_enclosure_url("https://joe.example.com/vacation.jpg");
-			item3->set_enclosure_type("image/jpeg");
+			item3->add_enclosure({
+				"https://joe.example.com/vacation.jpg",
+				"image/jpeg",
+				"",
+			});
 			const auto result3 = manager.enqueue_url(item3, feed);
 
 			THEN("return values indicate success") {
@@ -137,13 +146,19 @@ SCENARIO("enqueue_url() errors if the filename is already used", "[QueueManager]
 
 		auto item1 = std::make_shared<RssItem>(&cache);
 		const std::string enclosure_url1("https://example.com/podcast.mp3");
-		item1->set_enclosure_url(enclosure_url1);
-		item1->set_enclosure_type("audio/mpeg");
+		item1->add_enclosure({
+			enclosure_url1,
+			"audio/mpeg",
+			"",
+		});
 
 		auto item2 = std::make_shared<RssItem>(&cache);
 		const std::string enclosure_url2("https://example.com/~joe/podcast.mp3");
-		item2->set_enclosure_url(enclosure_url2);
-		item2->set_enclosure_type("audio/mpeg");
+		item2->add_enclosure({
+			enclosure_url2,
+			"audio/mpeg",
+			"",
+		});
 
 		auto feed = std::make_shared<RssFeed>(&cache, "https://example.com/news.atom");
 
@@ -212,8 +227,11 @@ SCENARIO("enqueue_url() errors if the queue file can't be opened for writing",
 		Cache cache(":memory:", &cfg);
 
 		auto item = std::make_shared<RssItem>(&cache);
-		item->set_enclosure_url("https://example.com/podcast.mp3");
-		item->set_enclosure_type("audio/mpeg");
+		item->add_enclosure({
+			"https://example.com/podcast.mp3",
+			"audio/mpeg",
+			"",
+		});
 
 		auto feed = std::make_shared<RssFeed>(&cache, "https://example.com/news.atom");
 
@@ -254,13 +272,19 @@ TEST_CASE("QueueManager puts files into a location configured by `download-path`
 
 	auto item1 = std::make_shared<RssItem>(&cache);
 	const std::string enclosure_url1("https://example.com/podcast.mp3");
-	item1->set_enclosure_url(enclosure_url1);
-	item1->set_enclosure_type("audio/mpeg");
+	item1->add_enclosure({
+		enclosure_url1,
+		"audio/mpeg",
+		"",
+	});
 
 	auto item2 = std::make_shared<RssItem>(&cache);
 	const std::string enclosure_url2("https://example.com/~joe/podcast.ogg");
-	item2->set_enclosure_url(enclosure_url2);
-	item2->set_enclosure_type("audio/vorbis");
+	item2->add_enclosure({
+		enclosure_url2,
+		"audio/vorbis",
+		"",
+	});
 
 	auto feed = std::make_shared<RssFeed>(&cache, "https://example.com/podcasts.atom");
 
@@ -301,8 +325,11 @@ TEST_CASE("QueueManager names files according to the `download-filename-format` 
 	Cache cache(":memory:", &cfg);
 
 	auto item = std::make_shared<RssItem>(&cache);
-	item->set_enclosure_url("https://example.com/~adam/podcast.mp3");
-	item->set_enclosure_type("audio/mpeg");
+	item->add_enclosure({
+		"https://example.com/~adam/podcast.mp3",
+		"audio/mpeg",
+		"",
+	});
 
 	auto feed = std::make_shared<RssFeed>(&cache, "https://example.com/podcasts.atom");
 
@@ -433,18 +460,27 @@ TEST_CASE("autoenqueue() adds all enclosures of all items to the queue", "[Queue
 		auto feed = std::make_shared<RssFeed>(&cache, "https://example.com/podcasts.atom");
 
 		auto item1 = std::make_shared<RssItem>(&cache);
-		item1->set_enclosure_url("https://example.com/~adam/podcast.mp3");
-		item1->set_enclosure_type("audio/mpeg");
+		item1->add_enclosure({
+			"https://example.com/~adam/podcast.mp3",
+			"audio/mpeg",
+			"",
+		});
 		feed->add_item(item1);
 
 		auto item2 = std::make_shared<RssItem>(&cache);
-		item2->set_enclosure_url("https://example.com/episode.ogg");
-		item2->set_enclosure_type("audio/vorbis");
+		item2->add_enclosure({
+			"https://example.com/episode.ogg",
+			"audio/vorbis",
+			"",
+		});
 		feed->add_item(item2);
 
 		auto item3 = std::make_shared<RssItem>(&cache);
-		item3->set_enclosure_url("https://example.com/~fae/painting.jpg");
-		item3->set_enclosure_type("image/jpeg");
+		item3->add_enclosure({
+			"https://example.com/~fae/painting.jpg",
+			"image/jpeg",
+			"",
+		});
 		feed->add_item(item3);
 
 		test_helpers::TempFile queue_file;
@@ -489,14 +525,20 @@ SCENARIO("autoenqueue() errors if the filename is already used", "[QueueManager]
 
 		auto item1 = std::make_shared<RssItem>(&cache);
 		const std::string enclosure_url1("https://example.com/podcast.mp3");
-		item1->set_enclosure_url(enclosure_url1);
-		item1->set_enclosure_type("audio/mpeg");
+		item1->add_enclosure({
+			enclosure_url1,
+			"audio/mpeg",
+			"",
+		});
 		feed->add_item(item1);
 
 		auto item2 = std::make_shared<RssItem>(&cache);
 		const std::string enclosure_url2("https://example.com/~joe/podcast.mp3");
-		item2->set_enclosure_url(enclosure_url2);
-		item2->set_enclosure_type("audio/mpeg");
+		item2->add_enclosure({
+			enclosure_url2,
+			"audio/mpeg",
+			"",
+		});
 		feed->add_item(item2);
 
 		test_helpers::TempFile queue_file;
@@ -542,8 +584,11 @@ SCENARIO("autoenqueue() errors if the queue file can't be opened for writing",
 		auto feed = std::make_shared<RssFeed>(&cache, "https://example.com/news.atom");
 
 		auto item = std::make_shared<RssItem>(&cache);
-		item->set_enclosure_url("https://example.com/podcast.mp3");
-		item->set_enclosure_type("audio/mpeg");
+		item->add_enclosure({
+			"https://example.com/podcast.mp3",
+			"audio/mpeg",
+			"",
+		});
 		feed->add_item(item);
 
 		test_helpers::TempFile queue_file;
@@ -580,19 +625,28 @@ TEST_CASE("autoenqueue() skips already-enqueued items", "[QueueManager]")
 	auto feed = std::make_shared<RssFeed>(&cache, "https://example.com/news.atom");
 
 	auto item1 = std::make_shared<RssItem>(&cache);
-	item1->set_enclosure_url("https://example.com/podcast.mp3");
-	item1->set_enclosure_type("audio/mpeg");
+	item1->add_enclosure({
+		"https://example.com/podcast.mp3",
+		"audio/mpeg",
+		"",
+	});
 	feed->add_item(item1);
 
 	auto item2 = std::make_shared<RssItem>(&cache);
-	item2->set_enclosure_url("https://example.com/podcast2.mp3");
-	item2->set_enclosure_type("audio/mpeg");
+	item2->add_enclosure({
+		"https://example.com/podcast2.mp3",
+		"audio/mpeg",
+		"",
+	});
 	item2->set_enqueued(true);
 	feed->add_item(item2);
 
 	auto item3 = std::make_shared<RssItem>(&cache);
-	item3->set_enclosure_url("https://example.com/podcast3.mp3");
-	item3->set_enclosure_type("audio/mpeg");
+	item3->add_enclosure({
+		"https://example.com/podcast3.mp3",
+		"audio/mpeg",
+		"",
+	});
 	feed->add_item(item3);
 
 	test_helpers::TempFile queue_file;
@@ -623,18 +677,27 @@ TEST_CASE("autoenqueue() only enqueues HTTP and HTTPS URLs", "[QueueManager]")
 	auto feed = std::make_shared<RssFeed>(&cache, "https://example.com/news.atom");
 
 	auto item1 = std::make_shared<RssItem>(&cache);
-	item1->set_enclosure_url("https://example.com/podcast.mp3");
-	item1->set_enclosure_type("audio/mpeg");
+	item1->add_enclosure({
+		"https://example.com/podcast.mp3",
+		"audio/mpeg",
+		"",
+	});
 	feed->add_item(item1);
 
 	auto item2 = std::make_shared<RssItem>(&cache);
-	item2->set_enclosure_url("http://example.com/podcast2.mp3");
-	item2->set_enclosure_type("audio/mpeg");
+	item2->add_enclosure({
+		"http://example.com/podcast2.mp3",
+		"audio/mpeg",
+		"",
+	});
 	feed->add_item(item2);
 
 	auto item3 = std::make_shared<RssItem>(&cache);
-	item3->set_enclosure_url("ftp://user@example.com/podcast3.mp3");
-	item3->set_enclosure_type("audio/mpeg");
+	item3->add_enclosure({
+		"ftp://user@example.com/podcast3.mp3",
+		"audio/mpeg",
+		"",
+	});
 	feed->add_item(item3);
 
 	test_helpers::TempFile queue_file;

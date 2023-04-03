@@ -60,7 +60,7 @@ private:
 		const rsspp::Item& item);
 	void set_item_content(std::shared_ptr<RssItem> x,
 		const rsspp::Item& item);
-	void set_item_enclosure(std::shared_ptr<RssItem> x,
+	void set_item_enclosures(std::shared_ptr<RssItem> x,
 		const rsspp::Item& item);
 	std::string get_guid(const rsspp::Item& item) const;
 
