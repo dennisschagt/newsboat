@@ -61,6 +61,8 @@ extern "C" {
 #include "utils.h"
 #include "searchresultslistformaction.h"
 
+#include "libnewsboat-ffi/src/tui.rs.h"
+
 namespace {
 bool ctrl_c_hit = false;
 }
@@ -153,6 +155,14 @@ bool View::run_commands(const std::vector<MacroCmd>& commands)
 int View::run()
 {
 	bool have_macroprefix = false;
+
+	auto ui = tui::bridged::create();
+	tui::bridged::init(*ui);
+	tui::bridged::draw(*ui);
+	const auto tui_event = std::string(tui::bridged::wait_for_event(*ui));
+	tui::bridged::exit(*ui);
+	std::cout << "got event: " << tui_event << std::endl;
+	return 0;
 
 	feedlist_form = std::make_shared<FeedListFormAction>(
 			this, feedlist_str, rsscache, filters, cfg, rxman);
