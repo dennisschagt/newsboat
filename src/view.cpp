@@ -158,11 +158,6 @@ int View::run()
 
 	auto ui = tui::bridged::create();
 	tui::bridged::init(*ui);
-	tui::bridged::draw(*ui);
-	const auto tui_event = std::string(tui::bridged::wait_for_event(*ui));
-	tui::bridged::exit(*ui);
-	std::cout << "got event: " << tui_event << std::endl;
-	return 0;
 
 	feedlist_form = std::make_shared<FeedListFormAction>(
 			this, feedlist_str, rsscache, filters, cfg, rxman);
@@ -172,12 +167,10 @@ int View::run()
 
 	get_current_formaction()->init();
 
-	Stfl::reset();
-
 	curs_set(0);
 
 	if (!run_commands(keys->get_startup_operation_sequence())) {
-		Stfl::reset();
+		tui::bridged::exit(*ui);
 		std::cerr << _("Error: failed to execute startup commands") << std::endl;
 		return EXIT_FAILURE;
 	}
@@ -194,7 +187,8 @@ int View::run()
 		fa->prepare();
 
 		// we then receive the event and ignore timeouts.
-		const std::string event = fa->draw_form_wait_for_event(INT_MAX);
+		tui::bridged::draw(*ui);
+		const std::string event  = std::string(tui::bridged::wait_for_event(*ui));
 
 		if (ctrl_c_hit) {
 			ctrl_c_hit = false;
@@ -204,7 +198,7 @@ int View::run()
 				confirm(_("Do you really want to quit "
 						"(y:Yes n:No)? "),
 					_("yn")) == *_("y")) {
-				Stfl::reset();
+				tui::bridged::exit(*ui);
 				return EXIT_FAILURE;
 			}
 		}
@@ -252,7 +246,7 @@ int View::run()
 
 	feedlist_form.reset();
 
-	Stfl::reset();
+	tui::bridged::exit(*ui);
 	return EXIT_SUCCESS;
 }
 

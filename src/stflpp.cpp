@@ -21,6 +21,7 @@ namespace newsboat {
 Stfl::Form::Form(const std::string& text)
 	: f(0)
 {
+	return;
 	ipool = stfl_ipool_create(
 			utils::translit(nl_langinfo(CODESET), "WCHAR_T").c_str());
 	if (!ipool) {
@@ -44,11 +45,13 @@ Stfl::Form::~Form()
 
 const char* Stfl::Form::run(int timeout)
 {
+	return "";
 	return stfl_ipool_fromwc(ipool, stfl_run(f, timeout));
 }
 
 std::string Stfl::Form::get(const std::string& name)
 {
+	return "";
 	const char* text = stfl_ipool_fromwc(
 			ipool, stfl_get(f, stfl_ipool_towc(ipool, name.c_str())));
 	std::string retval;
@@ -61,6 +64,7 @@ std::string Stfl::Form::get(const std::string& name)
 
 void Stfl::Form::set(const std::string& name, const std::string& value)
 {
+	return;
 	stfl_set(f,
 		stfl_ipool_towc(ipool, name.c_str()),
 		stfl_ipool_towc(ipool, value.c_str()));
@@ -69,6 +73,7 @@ void Stfl::Form::set(const std::string& name, const std::string& value)
 
 std::string Stfl::Form::get_focus()
 {
+	return "";
 	const char* focus = stfl_ipool_fromwc(ipool, stfl_get_focus(f));
 	std::string retval;
 	if (focus) {
@@ -80,6 +85,7 @@ std::string Stfl::Form::get_focus()
 
 void Stfl::Form::set_focus(const std::string& name)
 {
+	return;
 	stfl_set_focus(f, stfl_ipool_towc(ipool, name.c_str()));
 	LOG(Level::DEBUG, "Stfl::Form::set_focus: %s", name);
 }
@@ -88,6 +94,7 @@ void Stfl::Form::modify(const std::string& name,
 	const std::string& mode,
 	const std::string& text)
 {
+	return;
 	const wchar_t* wname, *wmode, *wtext;
 	wname = stfl_ipool_towc(ipool, name.c_str());
 	wmode = stfl_ipool_towc(ipool, mode.c_str());
@@ -98,6 +105,7 @@ void Stfl::Form::modify(const std::string& name,
 
 void Stfl::reset()
 {
+	return;
 	stfl_reset();
 }
 
@@ -105,6 +113,7 @@ static std::mutex quote_mtx;
 
 std::string Stfl::quote(const std::string& text)
 {
+	return "";
 	std::lock_guard<std::mutex> lock(quote_mtx);
 	stfl_ipool* ipool = stfl_ipool_create(
 			utils::translit(nl_langinfo(CODESET), "WCHAR_T").c_str());
@@ -117,6 +126,7 @@ std::string Stfl::quote(const std::string& text)
 std::string Stfl::Form::dump(const std::string& name, const std::string& prefix,
 	int focus)
 {
+	return "";
 	const char* text = stfl_ipool_fromwc(ipool,
 			stfl_dump(f,
 				stfl_ipool_towc(ipool, name.c_str()),
