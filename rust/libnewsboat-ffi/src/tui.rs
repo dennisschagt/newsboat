@@ -1,3 +1,4 @@
+use crate::tui::bridged::draw_tui_window;
 use libnewsboat::tui;
 
 // cxx doesn't allow to share types from other crates, so we have to wrap it
@@ -16,6 +17,12 @@ mod bridged {
         fn draw(tui: &mut Tui);
         fn wait_for_event(tui: &mut Tui) -> String;
     }
+
+    unsafe extern "C++" {
+        include!("libnewsboat-ffi/include/tuiwindow.h");
+
+        fn draw_tui_window();
+    }
 }
 
 fn create() -> Box<Tui> {
@@ -32,6 +39,7 @@ fn exit(tui: &mut Tui) {
 
 fn draw(tui: &mut Tui) {
     tui.0.draw();
+    draw_tui_window();
 }
 
 fn wait_for_event(tui: &mut Tui) -> String {

@@ -10,3 +10,4 @@ src/queueloader.cpp
 src/regexmanager.cpp
 src/regexowner.cpp
 src/textviewwidget.cpp
+src/tuiwindow.cpp

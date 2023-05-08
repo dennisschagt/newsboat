@@ -58,6 +58,7 @@ src/textformatter.cpp
 src/textviewwidget.cpp
 src/ttrssapi.cpp
 src/ttrssurlreader.cpp
+src/tuiwindow.cpp
 src/urlreader.cpp
 src/urlviewformaction.cpp
 src/view.cpp

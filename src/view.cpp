@@ -61,6 +61,8 @@ extern "C" {
 #include "utils.h"
 #include "searchresultslistformaction.h"
 
+#include "../rust/libnewsboat-ffi/include/tuiwindow.h"
+
 #include "libnewsboat-ffi/src/tui.rs.h"
 
 namespace {
@@ -188,6 +190,7 @@ int View::run()
 
 		// we then receive the event and ignore timeouts.
 		tui::bridged::draw(*ui);
+		//draw_tui_window();
 		const std::string event  = std::string(tui::bridged::wait_for_event(*ui));
 
 		if (ctrl_c_hit) {
