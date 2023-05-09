@@ -154,12 +154,32 @@ bool View::run_commands(const std::vector<MacroCmd>& commands)
 	return true;
 }
 
+class FakeWindow : public tui::bridged::IWindow {
+public:
+	FakeWindow()
+		: mTitle("this is a window title")
+	{
+	}
+	~FakeWindow() override = default;
+
+	const std::string& get_title() override {
+		std::cout << "get_title() got called" << std::endl;
+		return mTitle;
+	}
+
+private:
+	std::string mTitle;
+};
+
 int View::run()
 {
 	bool have_macroprefix = false;
 
 	auto ui = tui::bridged::create();
 	tui::bridged::init(*ui);
+
+	FakeWindow window;
+	tui::bridged::register_window(window);
 
 	feedlist_form = std::make_shared<FeedListFormAction>(
 			this, feedlist_str, rsscache, filters, cfg, rxman);
@@ -190,7 +210,6 @@ int View::run()
 
 		// we then receive the event and ignore timeouts.
 		tui::bridged::draw(*ui);
-		//draw_tui_window();
 		const std::string event  = std::string(tui::bridged::wait_for_event(*ui));
 
 		if (ctrl_c_hit) {

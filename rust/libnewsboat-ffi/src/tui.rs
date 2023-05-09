@@ -1,5 +1,8 @@
 use crate::tui::bridged::draw_tui_window;
 use libnewsboat::tui;
+use std::pin::Pin;
+
+use self::bridged::IWindow;
 
 // cxx doesn't allow to share types from other crates, so we have to wrap it
 // cf. https://github.com/dtolnay/cxx/issues/496
@@ -16,12 +19,18 @@ mod bridged {
         fn exit(tui: &mut Tui);
         fn draw(tui: &mut Tui);
         fn wait_for_event(tui: &mut Tui) -> String;
+
+        fn register_window(window: Pin<&mut IWindow>);
     }
 
     unsafe extern "C++" {
         include!("libnewsboat-ffi/include/tuiwindow.h");
 
         fn draw_tui_window();
+
+        type IWindow;
+
+        fn get_title(self: Pin<&mut IWindow>) -> &CxxString;
     }
 }
 
@@ -44,4 +53,9 @@ fn draw(tui: &mut Tui) {
 
 fn wait_for_event(tui: &mut Tui) -> String {
     tui.0.wait_for_event()
+}
+
+fn register_window(window: Pin<&mut IWindow>) {
+    let title = window.get_title();
+    println!("title: {}", title);
 }

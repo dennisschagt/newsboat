@@ -20,4 +20,6 @@ fn main() {
     add_cxxbridge("scopemeasure");
     add_cxxbridge("tui");
     add_cxxbridge("utils");
+
+    println!("cargo:rerun-if-changed=include/tuiwindow.h");
 }
