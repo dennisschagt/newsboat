@@ -910,6 +910,38 @@ Operation KeyMap::get_operation(const KeyCombination& key_combination,
 	return keymap_[context][key_combination];
 }
 
+std::vector<MacroCmd> KeyMap::get_operation(const std::vector<KeyCombination>&
+	key_sequence, const std::string& context, Operation& decision, BindingType& type)
+{
+	return get_operation(context_keymaps[context], key_sequence, decision, type);
+}
+
+std::vector<MacroCmd> KeyMap::get_operation(const Mapping& mapping,
+	const std::vector<KeyCombination>& key_sequence, Operation& decision, BindingType& type)
+{
+	if (key_sequence.empty()) {
+		if (mapping.is_leaf_node) {
+			decision = OP_INTERNAL_OPERATION_LIST;
+			type = mapping.binding_type;
+			return mapping.action.cmds;
+		} else {
+			decision = OP_INTERNAL_UNFINISHED_KEY_SEQUENCE;
+			return {};
+		}
+	} else {
+		const auto key_combination = key_sequence.front();
+		const auto remainder_key_sequence = std::vector<KeyCombination>(std::next(
+					key_sequence.begin()), key_sequence.end());
+		if (mapping.is_leaf_node || mapping.continuations.count(key_combination) == 0) {
+			decision = OP_NIL;
+			return {};
+		} else {
+			return get_operation(mapping.continuations.at(key_combination), remainder_key_sequence,
+					decision, type);
+		}
+	}
+}
+
 void KeyMap::dump_config(std::vector<std::string>& config_output) const
 {
 	for (const auto& ctx : contexts) {
@@ -1029,7 +1061,7 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 			if (contexts.count(context) == 0) {
 				throw ConfigHandlerException(strprintf::fmt(_("unknown context: %s"), context));
 			}
-			apply_bind(context_keymaps[context], key_sequence, cmds, description);
+			apply_bind(context_keymaps[context], key_sequence, cmds, description, BindingType::Bind);
 		}
 	} else if (action == "macro") {
 		std::string remaining_params = params;
@@ -1050,22 +1082,26 @@ void KeyMap::handle_action(const std::string& action, const std::string& params)
 	}
 }
 
-void KeyMap::apply_bind(Mapping& target, const std::vector<KeyCombination> key_sequence, const std::vector<MacroCmd>& cmds, const std::string& description)
+void KeyMap::apply_bind(Mapping& target, const std::vector<KeyCombination> key_sequence,
+	const std::vector<MacroCmd>& cmds, const std::string& description, BindingType type)
 {
 	if (key_sequence.size() == 0) {
 		target.is_leaf_node = true;
+		target.binding_type = type;
 		target.continuations.clear();
 		target.action = MacroBinding { cmds, description };
 	} else {
 		target.is_leaf_node = false;
 		target.action = {};
 		const auto key_combination = key_sequence.front();
-		const auto remainder_key_sequence = std::vector<KeyCombination>(std::next(key_sequence.begin()), key_sequence.end());
+		const auto remainder_key_sequence = std::vector<KeyCombination>(std::next(
+					key_sequence.begin()), key_sequence.end());
 		apply_bind(
 			target.continuations[key_combination],
 			remainder_key_sequence,
 			cmds,
-			description);
+			description,
+			type);
 	}
 }
 
