@@ -788,15 +788,15 @@ KeyMap::KeyMap(unsigned flags)
 			const std::uint32_t context_flag = ctx.second;
 			if ((op_desc.flags & (context_flag | KM_INTERNAL | KM_SYSKEYS))) {
 				const auto& default_key = op_desc.default_key;
-				keymap_[context][default_key] = op_desc.op;
+				apply_bindkey(context_keymaps[context], default_key, op_desc.op);
 			}
 		}
 	}
 
-	keymap_["help"][KeyCombination("b")] = OP_SK_PGUP;
-	keymap_["help"][KeyCombination("SPACE")] = OP_SK_PGDOWN;
-	keymap_["article"][KeyCombination("b")] = OP_SK_PGUP;
-	keymap_["article"][KeyCombination("SPACE")] = OP_SK_PGDOWN;
+	apply_bindkey(context_keymaps["help"], KeyCombination("b"), OP_SK_PGUP);
+	apply_bindkey(context_keymaps["help"], KeyCombination("SPACE"), OP_SK_PGDOWN);
+	apply_bindkey(context_keymaps["article"], KeyCombination("b"), OP_SK_PGUP);
+	apply_bindkey(context_keymaps["article"], KeyCombination("SPACE"), OP_SK_PGDOWN);
 }
 
 std::vector<KeyMapDesc> KeyMap::get_keymap_descriptions(std::string context)
@@ -842,10 +842,10 @@ void KeyMap::set_key(Operation op,
 	LOG(Level::DEBUG, "KeyMap::set_key(%d,%s) called", op, key.to_bindkey_string());
 	if (context == "all") {
 		for (const auto& ctx : contexts) {
-			keymap_[ctx.first][key] = op;
+			apply_bindkey(context_keymaps[ctx.first], key, op);
 		}
 	} else {
-		keymap_[context][key] = op;
+		apply_bindkey(context_keymaps[context], key, op);
 	}
 }
 
@@ -854,10 +854,10 @@ void KeyMap::unset_key(const KeyCombination& key, const std::string& context)
 	LOG(Level::DEBUG, "KeyMap::unset_key(%s) called", key.to_bindkey_string());
 	if (context == "all") {
 		for (const auto& ctx : contexts) {
-			keymap_[ctx.first][key] = OP_NIL;
+			context_keymaps[ctx.first].continuations.erase(key);
 		}
 	} else {
-		keymap_[context][key] = OP_NIL;
+		context_keymaps[context].continuations.erase(key);
 	}
 }
 
@@ -867,10 +867,10 @@ void KeyMap::unset_all_keys(const std::string& context)
 	auto internal_ops_only = get_internal_operations();
 	if (context == "all") {
 		for (const auto& ctx : contexts) {
-			keymap_[ctx.first] = internal_ops_only;
+			context_keymaps[ctx.first] = internal_ops_only;
 		}
 	} else {
-		keymap_[context] = std::move(internal_ops_only);
+		context_keymaps[context] = std::move(internal_ops_only);
 	}
 }
 
@@ -1105,6 +1105,21 @@ void KeyMap::apply_bind(Mapping& target, const std::vector<KeyCombination> key_s
 	}
 }
 
+void KeyMap::apply_bindkey(Mapping& target, const KeyCombination& key_combination,
+	Operation op)
+{
+	const auto cmds = std::vector<MacroCmd> {
+		{op, {}},
+	};
+	const std::string description = "";
+	apply_bind(
+		target,
+	{key_combination},
+	cmds,
+	description,
+	BindingType::BindKey);
+}
+
 ParsedOperations KeyMap::parse_operation_sequence(const std::string& line,
 	const std::string& command_name, bool allow_description)
 {
@@ -1163,13 +1178,20 @@ bool KeyMap::is_valid_context(const std::string& context)
 	return false;
 }
 
-std::map<KeyCombination, Operation> KeyMap::get_internal_operations() const
+Mapping KeyMap::get_internal_operations() const
 {
-	std::map<KeyCombination, Operation> internal_ops;
+	Mapping internal_ops;
 	for (const auto& opdesc : opdescs) {
 		if (opdesc.flags & KM_INTERNAL) {
 			const auto& default_key = opdesc.default_key;
-			internal_ops[default_key] = opdesc.op;
+			const std::string description = "";
+			const MacroBinding action {
+				{ MacroCmd { opdesc.op, {} } },
+				description,
+			};
+			internal_ops.continuations[default_key].is_leaf_node = true;
+			internal_ops.continuations[default_key].binding_type = BindingType::BindKey;
+			internal_ops.continuations[default_key].action = action;
 		}
 	}
 	return internal_ops;

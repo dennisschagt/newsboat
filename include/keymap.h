@@ -237,9 +237,10 @@ private:
 		const std::vector<KeyCombination>& key_sequence, Operation& decision, BindingType& type);
 	void apply_bind(Mapping& target, const std::vector<KeyCombination> key_sequence,
 		const std::vector<MacroCmd>& cmds, const std::string& description, BindingType type);
+	void apply_bindkey(Mapping& target, const KeyCombination& key_combination, Operation op);
 	bool is_valid_context(const std::string& context);
 	unsigned short get_flag_from_context(const std::string& context);
-	std::map<KeyCombination, Operation> get_internal_operations() const;
+	Mapping get_internal_operations() const;
 	std::string getopname(Operation op) const;
 	std::map<std::string, std::map<KeyCombination, Operation>> keymap_;
 	std::map<std::string, Mapping> context_keymaps;
