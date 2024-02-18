@@ -907,7 +907,14 @@ Operation KeyMap::get_operation(const KeyCombination& key_combination,
 		"KeyMap::get_operation: keycode = %s context = %s",
 		key_combination.to_bindkey_string(),
 		context);
-	return keymap_[context][key_combination];
+	if (context_keymaps[context].continuations.count(key_combination) == 0) {
+		return OP_NIL;
+	}
+	const auto& binding = context_keymaps[context].continuations[key_combination];
+	if (!binding.is_leaf_node || binding.action.cmds.size() != 1) {
+		return OP_NIL;
+	}
+	return binding.action.cmds[0].op;
 }
 
 std::vector<MacroCmd> KeyMap::get_operation(const std::vector<KeyCombination>&
@@ -946,19 +953,26 @@ void KeyMap::dump_config(std::vector<std::string>& config_output) const
 {
 	for (const auto& ctx : contexts) {
 		const std::string& context = ctx.first;
-		const auto& x = keymap_.at(context);
-		for (const auto& keymap : x) {
-			if (keymap.second < OP_INT_MIN) {
+		const auto& mapping = context_keymaps.at(context);
+		for (const auto& key_binding : mapping.continuations) {
+			const auto& key = key_binding.first;
+			const auto& binding = key_binding.second;
+			if (!binding.is_leaf_node || binding.binding_type != BindingType::BindKey || binding.action.cmds.size() != 1) {
+				continue;
+			}
+			const auto& cmd = binding.action.cmds.front();
+			if (cmd.op < OP_INT_MIN) {
 				std::string configline = "bind-key ";
-				configline.append(utils::quote(keymap.first.to_bindkey_string()));
+				configline.append(utils::quote(key.to_bindkey_string()));
 				configline.append(" ");
-				configline.append(getopname(keymap.second));
+				configline.append(getopname(cmd.op));
 				configline.append(" ");
 				configline.append(context);
 				config_output.push_back(configline);
 			}
 		}
 	}
+	// TODO: Add `bind` commands to dump
 	for (const auto& macro : macros_) {
 		std::string configline = "macro ";
 		configline.append(macro.first.to_bindkey_string());
