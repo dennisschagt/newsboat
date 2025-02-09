@@ -1,6 +1,8 @@
 #ifndef NEWSBOAT_TEST_HELPERS_STRINGMAKER_OPTIONAL_H_
 #define NEWSBOAT_TEST_HELPERS_STRINGMAKER_OPTIONAL_H_
 
+// IWYU pragma: always_keep
+
 #include "3rd-party/optional.hpp"
 #include "3rd-party/catch.hpp"
 

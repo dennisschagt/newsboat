@@ -1,6 +1,8 @@
 #ifndef NEWSBOAT_TEST_HELPERS_STRINGMAKER_KEYCOMBINATION_H_
 #define NEWSBOAT_TEST_HELPERS_STRINGMAKER_KEYCOMBINATION_H_
 
+// IWYU pragma: always_keep
+
 #include "keycombination.h"
 #include "3rd-party/catch.hpp"
 
