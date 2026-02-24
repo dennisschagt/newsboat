@@ -232,11 +232,8 @@ rsspp::Feed FeedRetriever::download_http(const std::string& uri)
 				etag,
 				p.get_etag());
 			ch.update_lastmodified(uri,
-				(p.get_last_modified() != lm)
-				? p.get_last_modified()
-				: 0,
-				(etag != p.get_etag()) ? p.get_etag()
-				: "");
+				(p.get_last_modified() != lm) ? p.get_last_modified() : 0,
+				(etag != p.get_etag()) ? p.get_etag() : "");
 		}
 	}
 	LOG(Level::DEBUG,
