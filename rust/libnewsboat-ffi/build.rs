@@ -6,6 +6,8 @@ fn add_cxxbridge(module: &str) {
         // this because these warnings are turned into errors when we pass `-D warnings` to Cargo
         // on CI.
         .flag("-w")
+        // Path relative to the build script
+        .include("../../include")
         .compile(&format!("libnewsboat-ffi-{module}"));
     println!("cargo:rerun-if-changed=src/{module}.rs");
 }
@@ -22,7 +24,10 @@ fn main() {
     add_cxxbridge("keymap");
     add_cxxbridge("logger");
     add_cxxbridge("matchererror");
+    add_cxxbridge("matcher");
     add_cxxbridge("scopemeasure");
     add_cxxbridge("stflrichtext");
     add_cxxbridge("utils");
+
+    println!("cargo:rerun-if-changed=../../include/matchable.h");
 }

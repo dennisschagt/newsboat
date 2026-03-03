@@ -12,6 +12,7 @@ src/fslock.cpp
 src/history.cpp
 src/keycombination.cpp
 src/keymap.cpp
+src/matchable.cpp
 src/matcher.cpp
 src/matcherexception.cpp
 src/scopemeasure.cpp

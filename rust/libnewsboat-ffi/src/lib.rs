@@ -19,6 +19,7 @@ pub mod human_panic;
 pub mod keycombination;
 pub mod keymap;
 pub mod logger;
+pub mod matcher;
 pub mod matchererror;
 pub mod scopemeasure;
 pub mod stflrichtext;

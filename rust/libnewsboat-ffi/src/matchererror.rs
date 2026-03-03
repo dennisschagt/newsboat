@@ -1,8 +1,14 @@
+use cxx::{ExternType, type_id};
 use libnewsboat::matchererror;
 
 // cxx doesn't allow to share types from other crates, so we have to wrap it
 // cf. https://github.com/dtolnay/cxx/issues/496
-struct MatcherError(matchererror::MatcherError);
+pub struct MatcherError(pub matchererror::MatcherError);
+
+unsafe impl ExternType for MatcherError {
+    type Id = type_id!("newsboat::matchererror::bridged::MatcherError");
+    type Kind = cxx::kind::Opaque;
+}
 
 #[cxx::bridge(namespace = "newsboat::matchererror::bridged")]
 mod bridged {

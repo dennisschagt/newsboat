@@ -4,6 +4,8 @@
 #include <optional>
 #include <string>
 
+#include "rust/cxx.h"
+
 namespace newsboat {
 
 class Matchable {
@@ -14,6 +16,10 @@ public:
 	const =
 		0;
 };
+
+// For Rust FFI
+bool get_matchable_attribute(const Matchable& matchable, rust::Str attribute,
+	rust::String& output);
 
 } // namespace newsboat
 
